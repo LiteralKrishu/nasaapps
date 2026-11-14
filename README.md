@@ -12,7 +12,7 @@ Open [the Marswalk planner](map/index.html) in a browser. Compare routes and ele
 ## Planner features
 
 - [Traverse map and elevation profile](map/index.html#traverse). Toggle HiRISE imagery, contours, slope, dune exclusion, the rover track, and DAN samples. Compare the Namib detour with the direct route.
-- [Return-to-base planner](map/index.html#return). Set walking pace and stop time. Check oxygen, carbon dioxide removal, battery, and cooling-water reserves.
+- [Return-to-base planner](map/index.html#return). Set walking pace, science time, and delay. See when oxygen, carbon dioxide removal, battery, or cooling water first reaches reserve.
 - [Gobabeb science stop](map/index.html#gobabeb). Explore Curiosity imagery, sample chemistry and mineralogy, grain sizes, and the thermal behavior of dune sand.
 - [Curiosity weather timeline](map/index.html#weather). Browse air and ground temperature, pressure, and available wind across both Bagnold campaign phases.
 - [May 2024 solar storm replay](map/index.html#solar-storm). Compare Curiosity RAD surface dose rates with the pre-storm background and MAVEN’s orbital ion flux on a shared timeline.

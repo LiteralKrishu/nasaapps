@@ -9,6 +9,10 @@
   ].map(([name, label]) => ({ name, label, cell: document.querySelector(`[data-balance="${name}"]`) }));
   const results = get("return-results");
   const status = get("return-status");
+  const timeline = get("return-timeline");
+  const track = get("return-track-phases");
+  const marker = get("return-reserve-marker");
+  const phaseReadings = get("return-phases");
   const metrics = ["round-trip", "time-margin", "limiting-resource", "latest-departure"];
   const defaultRoute = document.querySelector("[data-route][aria-pressed=true]").dataset.route;
   let selectedRoute = { ...window.marsSurvey.routes[defaultRoute], name: defaultRoute };
@@ -19,6 +23,51 @@
     if (Math.abs(value) < epsilon) return "0.0 min";
     if (Math.abs(value) < 0.05) return value < 0 ? "−<0.1 min" : "<0.1 min";
     return `${value < 0 ? "−" : ""}${Math.abs(value).toFixed(1)} min`;
+  }
+
+  function renderTimeline(phases, limits) {
+    const { elapsed, limit, latestDeparture, limitLabel } = limits;
+    const total = Math.max(elapsed, limit);
+    const segments = document.createDocumentFragment();
+    const readings = document.createDocumentFragment();
+    let start = 0;
+    let reservePhase;
+    for (const { label, key, duration } of phases) {
+      if (duration === 0) continue;
+      const end = start + duration;
+      if (limit > start && limit <= end + epsilon) reservePhase = label;
+      const segment = document.createElement("span");
+      segment.dataset.phase = key;
+      segment.style.width = `${100 * duration / total}%`;
+      segments.append(segment);
+
+      const reading = document.createElement("div");
+      reading.dataset.phase = key;
+      const term = document.createElement("dt");
+      term.textContent = label;
+      const value = document.createElement("dd");
+      value.textContent = minutes(duration);
+      const window = document.createElement("span");
+      window.textContent = `${minutes(start).replace(" min", "")}–${minutes(end)} from start`;
+      reading.append(term, value, window);
+      readings.append(reading);
+      start = end;
+    }
+    track.replaceChildren(segments);
+    phaseReadings.replaceChildren(readings);
+    marker.hidden = limit < 0;
+    marker.style.left = `${100 * Math.max(0, limit) / total}%`;
+    const reserveTime = limit < 0 ? "" : `First reserve at ${minutes(limit)} from start (${limitLabel}).`;
+    let reserveStage = "";
+    if (limit > elapsed + epsilon) reserveStage = "That is after the planned return.";
+    else if (Math.abs(limit - elapsed) <= epsilon) reserveStage = "That is at arrival back at base.";
+    else if (limit === 0) reserveStage = "That is at departure.";
+    else if (reservePhase) reserveStage = `That is during the ${reservePhase.toLowerCase()} phase.`;
+    const departureTime = latestDeparture >= phases[0].duration - epsilon
+      ? `Up to ${minutes(Math.max(0, latestDeparture - phases[0].duration))} at the stop, including any delay.`
+      : "The out-and-back walk alone reaches or exceeds the return budget.";
+    get("return-reserve-note").textContent = [reserveTime, reserveStage, departureTime].filter(Boolean).join(" ");
+    timeline.hidden = false;
   }
 
   function render() {
@@ -36,7 +85,7 @@
       }
       results.dataset.result = "pending";
       status.textContent = "";
-      get("travel-breakdown").textContent = "";
+      timeline.hidden = true;
       return;
     }
 
@@ -44,7 +93,13 @@
     const values = Object.fromEntries(fields.map(field => [field.name, field.valueAsNumber]));
     const outbound = selectedRoute.distance / values.outbound / 60;
     const inbound = selectedRoute.distance / values.inbound / 60;
-    const elapsed = outbound + values.stop + inbound;
+    const phases = [
+      { label: "Outbound", key: "outbound", duration: outbound },
+      { label: "Science stop", key: "stop", duration: values.stop },
+      { label: "Delay", key: "delay", duration: values.delay },
+      { label: "Return", key: "inbound", duration: inbound }
+    ];
+    const elapsed = phases.reduce((sum, phase) => sum + phase.duration, 0);
     const budgets = resources.map(resource => ({
       ...resource,
       available: values[resource.name],
@@ -54,11 +109,12 @@
 
     const limit = Math.min(...budgets.map(budget => budget.usable));
     const limiting = budgets.filter(budget => Math.abs(budget.usable - limit) < epsilon);
+    const limitLabel = limiting.map(budget => budget.label).join(", ");
     const margin = limit - elapsed;
     const latestDeparture = limit - inbound;
     get("round-trip").textContent = minutes(elapsed);
     get("time-margin").textContent = minutes(margin);
-    get("limiting-resource").textContent = limiting.map(budget => budget.label).join(", ");
+    get("limiting-resource").textContent = limitLabel;
     get("latest-departure").textContent = latestDeparture + epsilon < outbound
       ? "Return exceeds budget"
       : `${minutes(latestDeparture)} from start`;
@@ -82,7 +138,7 @@
       : atReserve ? "The limiting resource reaches reserve at arrival." : "All modeled resources are above reserve at arrival.";
     const terrainStatus = crossesDune ? " The selected route crosses the dune exclusion zone. Budget comparison only." : "";
     status.textContent = budgetStatus + terrainStatus;
-    get("travel-breakdown").textContent = `${minutes(outbound)} outbound · ${minutes(values.stop)} at the stop · ${minutes(inbound)} returning`;
+    renderTimeline(phases, { elapsed, limit, latestDeparture, limitLabel });
   }
 
   form.addEventListener("submit", event => event.preventDefault());
