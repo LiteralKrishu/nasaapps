@@ -30,6 +30,22 @@ The calculator uses the selected outbound distance in each direction. It divides
 
 The timeline shows outbound travel, science time, delay at the stop, and return travel. It marks when the first resource reaches reserve and identifies the phase if that happens during the trip. The time available at the stop is the time above reserve minus both travel legs. It includes science and any delay. The model uses the entered pace and constant resource use. The starting values are illustrative.
 
+## Go / no-go readiness
+
+The readiness panel combines five checks and reports the most severe result: go, caution, no-go, or incomplete when the return planner has invalid inputs. The limits are illustrative planning thresholds for this demonstration, not NASA flight rules. The logic lives in `lib/readiness.js`.
+
+| Check | Go | Caution | No-go |
+| --- | --- | --- | --- |
+| Route & terrain | Clear of the dune exclusion zone, peak slope below 15° | Peak slope 15–20° | Crosses the exclusion zone or peak slope above 20° |
+| Suit consumables | At least 15 min above reserve at return | Under 15 min of margin | Any resource below reserve at departure or return |
+| Weather | Report available, overnight air above −85 °C, 30-minute mean wind below 10 m/s | Colder night, stronger wind, or no report for the chosen sol | — |
+| Radiation | Curiosity RAD pre-storm background dose rate | Solar particle event alert, using the May 2024 peak dose rate | — |
+| Marsquakes | InSight located no sources inside Gale | — | — |
+
+The EVA dose multiplies the selected dose rate by the planned round-trip time. `scripts/build_readiness.mjs` derives the compact daily weather, radiation and seismic summary in `lib/data/readiness.json` from the full datasets. Run it with `npm run data:readiness` after rebuilding them.
+
+Every plan setting that differs from the defaults is stored in the page address, so a plan can be shared as a link. Unknown keys, routes and sols are ignored.
+
 ## Gobabeb science
 
 The panel shows Curiosity’s views of Namib’s ripple crests and slip face. The CheMin table gives the major mineral shares of the crystalline part of the fine scoop. The APXS comparison uses measurements of separate fine and coarse discard piles. The THEMIS and Curiosity thermal estimates describe different footprints. [CheMin Table 1](https://doi.org/10.1002/2017JE005262) · [APXS Table 3](https://doi.org/10.1002/2017JE005267) · [Thermal data comparison](https://doi.org/10.1029/2021JE007076)

@@ -616,3 +616,49 @@ button:not(:disabled):not([aria-pressed=true]):hover { border-color: var(--accen
   .hero-actions a { flex: 1; justify-content: center; }
   .hero-stats dd { font-size: 24px; }
 }
+
+/* ---------- Go / no-go readiness ---------- */
+:root { --go: #8fd19e; --caution: #ecbb71; --nogo: #ed6f5b; }
+[data-status="go"] { --status: var(--go); }
+[data-status="caution"] { --status: var(--caution); }
+[data-status="nogo"] { --status: var(--nogo); }
+[data-status="incomplete"] { --status: var(--muted); }
+.readiness { border-top: 3px solid var(--status); }
+.readiness-share { display: grid; justify-items: end; gap: 6px; }
+.readiness-share button { min-height: 38px; padding-inline: 14px; }
+.readiness-share .section-note { margin: 0; min-height: 1.5em; }
+.readiness-grid { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); gap: clamp(16px, 3vw, 32px); align-items: start; }
+.readiness-verdict {
+  display: grid; gap: 10px; padding: 20px; border-radius: var(--radius);
+  background: radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--status) 16%, transparent), transparent 70%), var(--bg);
+  border: 1px solid color-mix(in srgb, var(--status) 45%, var(--line));
+}
+.readiness-label { font: 11px var(--font-mono), monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.readiness-verdict > p { margin: 0; font-size: 14px; line-height: 1.5; }
+.status-pill {
+  justify-self: start; display: inline-flex; align-items: center; gap: 8px;
+  font: 400 clamp(38px, 5vw, 56px)/1 var(--font-serif), Georgia, serif; color: var(--status);
+}
+.status-pill::before { content: ""; width: .32em; height: .32em; border-radius: 50%; background: var(--status); box-shadow: 0 0 0 .12em color-mix(in srgb, var(--status) 25%, transparent); }
+.status-pill.small { font: 600 11px var(--font-mono), monospace; letter-spacing: .06em; text-transform: uppercase; gap: 6px; padding: 3px 8px; border-radius: 99px; background: color-mix(in srgb, var(--status) 14%, transparent); }
+.status-pill.small::before { width: 6px; height: 6px; box-shadow: none; }
+.readiness-controls { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13px; }
+.readiness-controls select { width: 100%; }
+.readiness-toggle { margin-top: 4px; }
+.readiness-checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.readiness-checks li { display: grid; grid-template-columns: 4px minmax(0, 1fr) auto; gap: 14px; align-items: start; padding: 14px 16px 14px 0; background: var(--bg); }
+.readiness-checks .status-dot { align-self: stretch; background: var(--status); }
+.readiness-check-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.readiness-checks h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.readiness-checks p { margin: 5px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink); opacity: .9; }
+.readiness-checks .readiness-facts { color: var(--muted); font: 12px var(--font-mono), monospace; opacity: 1; }
+.readiness-checks a { font-size: 12px; white-space: nowrap; align-self: center; }
+@media (prefers-reduced-motion: no-preference) {
+  .readiness-verdict, .readiness-checks .status-dot, .readiness { transition: border-color .3s var(--ease), background-color .3s var(--ease); }
+}
+@media (max-width: 760px) {
+  .readiness-grid { grid-template-columns: 1fr; }
+  .readiness-share { justify-items: start; }
+  .readiness-checks li { grid-template-columns: 4px minmax(0, 1fr); }
+  .readiness-checks a { grid-column: 2; justify-self: start; }
+}
