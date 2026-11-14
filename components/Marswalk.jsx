@@ -1,15 +1,23 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import water from "@/lib/data/water-isru.json";
+import { DEFAULTS as PLANNER_DEFAULTS } from "@/lib/planner";
 import TraverseSection from "./TraverseSection";
 import ReturnPlanner from "./ReturnPlanner";
 import GobabebSection from "./GobabebSection";
-import WeatherSection from "./WeatherSection";
-import StormSection from "./StormSection";
-import ResourcesSection from "./ResourcesSection";
 import WaterSection from "./WaterSection";
-import QuakeSection from "./QuakeSection";
+import LazySection from "./LazySection";
+
+// Heavy, data-rich sections load their code and data only when needed.
+const placeholder = id => function Loading() {
+  return <section id={id} className="lazy-placeholder" aria-busy="true" aria-label="Loading section" />;
+};
+const WeatherSection = dynamic(() => import("./WeatherSection"), { ssr: false, loading: placeholder("weather") });
+const StormSection = dynamic(() => import("./StormSection"), { ssr: false, loading: placeholder("solar-storm") });
+const ResourcesSection = dynamic(() => import("./ResourcesSection"), { ssr: false, loading: placeholder("resource-exploration") });
+const QuakeSection = dynamic(() => import("./QuakeSection"), { ssr: false, loading: placeholder("marsquakes") });
 
 const NAV = [
   ["traverse", "Traverse"],
@@ -33,6 +41,7 @@ export default function Marswalk() {
   const [selectedDanId, setSelectedDanId] = useState(water?.gobabebSample);
   const [weatherSol, setWeatherSol] = useState(1225);
   const [weatherView, setWeatherView] = useState("sol");
+  const [plannerInputs, setPlannerInputs] = useState(PLANNER_DEFAULTS);
 
   const setLayer = useCallback((name, visible) => setLayers(current => ({ ...current, [name]: visible })), []);
 
@@ -71,13 +80,15 @@ export default function Marswalk() {
         selectedDanId={selectedDanId}
         onSelectDan={setSelectedDanId}
       />
-      <ReturnPlanner routeName={routeName} />
+      <ReturnPlanner routeName={routeName} inputs={plannerInputs} onInputsChange={setPlannerInputs} />
       <GobabebSection onShowSamplingWeather={showSamplingWeather} />
-      <WeatherSection sol={weatherSol} onSolChange={setWeatherSol} view={weatherView} onViewChange={setWeatherView} />
-      <StormSection />
-      <ResourcesSection />
+      <LazySection id="weather">
+        <WeatherSection sol={weatherSol} onSolChange={setWeatherSol} view={weatherView} onViewChange={setWeatherView} />
+      </LazySection>
+      <LazySection id="solar-storm"><StormSection /></LazySection>
       <WaterSection selectedDanId={selectedDanId} onSelectDan={setSelectedDanId} onShowDanOnMap={showDanOnMap} />
-      <QuakeSection />
+      <LazySection id="resource-exploration"><ResourcesSection /></LazySection>
+      <LazySection id="marsquakes"><QuakeSection /></LazySection>
 
       <footer>
         <p>Terrain and imagery by USGS Astrogeology, NASA, JPL-Caltech, and the University of Arizona. Rover track from NASA PDS PLACES. Surface photo by NASA/JPL-Caltech.</p>

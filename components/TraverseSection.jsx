@@ -3,13 +3,13 @@
 import { useMemo, useRef, useState } from "react";
 import survey from "@/lib/data/survey.json";
 import water from "@/lib/data/water-isru.json";
-import { useElementSize } from "@/lib/hooks";
+import { linePath, useElementSize } from "@/lib/hooks";
+import ProfileChart from "./ProfileChart";
 
 const [WIDTH, HEIGHT] = survey.size;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 1.45;
 
-const linePath = points => points.map((point, index) => `${index ? "L" : "M"}${point[0]},${point[1]}`).join(" ");
 
 function clampView({ x, y, zoom }) {
   const w = WIDTH / zoom;
@@ -24,7 +24,7 @@ function clampView({ x, y, zoom }) {
 function MapLabel({ x, y, children, anchor = "start" }) {
   return (
     <text
-      x={x} y={y} textAnchor={anchor} fontSize={4.7} fontFamily="monospace" className="map-label"
+      x={x} y={y} textAnchor={anchor} fontSize={4.7} className="map-label"
       fontWeight={700} paintOrder="stroke" strokeWidth={1.3} strokeLinejoin="round"
       style={{ fill: "var(--ink)", stroke: "var(--bg)" }}
     >
@@ -36,9 +36,6 @@ function MapLabel({ x, y, children, anchor = "start" }) {
 const hazardPath = linePath(survey.hazard) + "Z";
 const historyPath = linePath(survey.history);
 const routePaths = Object.fromEntries(Object.entries(survey.routes).map(([name, route]) => [name, linePath(route.path)]));
-const allElevations = Object.values(survey.routes).flatMap(route => route.profile.map(sample => sample[3]));
-const ELEVATION_MIN = Math.floor((Math.min(...allElevations) - 0.25) / 2) * 2;
-const ELEVATION_MAX = Math.ceil((Math.max(...allElevations) + 0.25) / 2) * 2;
 
 const danPoints = water?.dan ?? [];
 // Draw active samples above passive samples where the archive uses the same center.
@@ -54,53 +51,6 @@ function DanMarker({ point, selected, onSelect }) {
   ) : (
     <rect x={point.x - 0.85} y={point.y - 0.85} width={1.7} height={1.7} className={className}
       vectorEffect="non-scaling-stroke" onClick={onClick}>{title}</rect>
-  );
-}
-
-function ProfileChart({ route, routeName, index, onInspect }) {
-  const ref = useRef(null);
-  const { width: measured } = useElementSize(ref);
-  const width = Math.max(250, Math.round(measured || 800));
-  const axes = { left: 64, right: width - 18, top: 15, bottom: 128 };
-  const { left, right, top, bottom } = axes;
-  const samples = route.profile;
-  const routeColor = routeName === "detour" ? "var(--accent)" : "var(--direct)";
-  const xAt = distance => left + distance / route.distance * (right - left);
-  const yAt = elevation => bottom - (elevation - ELEVATION_MIN) / (ELEVATION_MAX - ELEVATION_MIN) * (bottom - top);
-  const path = linePath(samples.map(sample => [xAt(sample[0]), yAt(sample[3])]));
-  const point = samples[index];
-
-  const onPointerMove = event => {
-    const bounds = ref.current.getBoundingClientRect();
-    const chartX = (event.clientX - bounds.left) / bounds.width * width;
-    const fraction = Math.min(1, Math.max(0, (chartX - left) / (right - left)));
-    onInspect(Math.round(fraction * (samples.length - 1)));
-  };
-
-  return (
-    <svg id="profile-chart" ref={ref} viewBox={`0 0 ${width} 155`} role="img"
-      aria-label="Elevation by distance along the selected route" onPointerMove={onPointerMove}>
-      {[0, 1, 2, 3].map(i => {
-        const elevation = ELEVATION_MAX - (ELEVATION_MAX - ELEVATION_MIN) * i / 3;
-        const y = yAt(elevation);
-        return (
-          <g key={i}>
-            <path d={`M${left} ${y}H${right}`} style={{ stroke: "var(--line)" }} />
-            <text x={left - 8} y={y + 4} textAnchor="end" fontSize={12} style={{ fill: "var(--muted)" }}>{`${Math.round(elevation)} m`}</text>
-          </g>
-        );
-      })}
-      <path d={`${path}L${right} ${bottom}H${left}Z`} opacity={0.14} style={{ fill: routeColor }} />
-      <path d={path} strokeWidth={2.4} fill="none" style={{ stroke: routeColor }} />
-      {[0, 1, 2, 3, 4].map(i => (
-        <text key={i} x={left + (right - left) * i / 4} y={148} textAnchor={i === 4 ? "end" : "middle"} fontSize={12}
-          style={{ fill: "var(--muted)" }}>{`${Math.round(route.distance * i / 4)} m`}</text>
-      ))}
-      <g>
-        <line x1={xAt(point[0])} x2={xAt(point[0])} y1={top} y2={bottom} strokeDasharray="3 4" style={{ stroke: "var(--direct)" }} />
-        <circle cx={xAt(point[0])} cy={yAt(point[3])} r={4} strokeWidth={1.7} style={{ fill: routeColor, stroke: "var(--bg)" }} />
-      </g>
-    </svg>
   );
 }
 
@@ -329,7 +279,7 @@ export default function TraverseSection({
         </section>
         <section className="side-panel science">
           <h2>Gobabeb science stop</h2>
-          <img src="/data/namib-surface.webp" alt="Curiosity view of ripples and the steep downwind face of Namib Dune" />
+          <img src="/data/namib-surface.webp" width={1000} height={241} loading="lazy" decoding="async" alt="Curiosity view of ripples and the steep downwind face of Namib Dune" />
           <p>Curiosity sampled wind-sorted sand at the dune margin on sol 1225.</p>
           <a href="#gobabeb">Explore the observations ↓</a>
         </section>

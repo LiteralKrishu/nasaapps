@@ -95,7 +95,7 @@ export default function WaterSection({ selectedDanId, onSelectDan, onShowDanOnMa
           </div>
           <figure className="water-figure">
             <div className="water-map">
-              <img src={`/data/swim-${depth}.png`} alt={`Gale Crater regional ice consistency grid, ${depthLabel} depth`} />
+              <img src={`/data/swim-${depth}.png`} loading="lazy" decoding="async" alt={`Gale Crater regional ice consistency grid, ${depthLabel} depth`} />
               <span className="water-site" aria-hidden="true" style={{ left: `${layer.mapX}%`, top: `${layer.mapY}%` }}>
                 <span>Namib</span>
               </span>

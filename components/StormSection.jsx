@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import dataset from "@/lib/data/solar-storm.json";
-import { cssVar, METHODS_URL, niceStep, prepareCanvas, useElementSize } from "@/lib/hooks";
+import { canvasFont, cssVar, METHODS_URL, niceStep, prepareCanvas, useElementSize } from "@/lib/hooks";
 
 const available = Boolean(dataset?.rows?.length);
 const rows = dataset?.rows ?? [];
@@ -50,7 +50,7 @@ function drawTrack(canvas, width, height, track, selected) {
   const ctx = prepareCanvas(canvas, width, height);
   if (!ctx) return;
   const { step, ticks } = track;
-  ctx.font = "11px monospace";
+  ctx.font = canvasFont(11);
   const left = 52;
   const right = width - 13;
   const top = 15;
@@ -143,7 +143,9 @@ function TrackChart({ track, selected }) {
 
 export default function StormSection() {
   const [selected, setSelected] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const [playRequested, setPlaying] = useState(false);
+  // Playback stops by itself on the last window.
+  const playing = playRequested && selected < last;
   const [announcement, setAnnouncement] = useState("");
 
   useEffect(() => {
@@ -151,10 +153,6 @@ export default function StormSection() {
     const timer = setInterval(() => setSelected(current => Math.min(last, current + 1)), 180);
     return () => clearInterval(timer);
   }, [playing]);
-
-  useEffect(() => {
-    if (playing && selected === last) setPlaying(false);
-  }, [playing, selected]);
 
   useEffect(() => {
     const onVisibility = () => { if (document.hidden) setPlaying(false); };
