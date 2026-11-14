@@ -1,12 +1,15 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import water from "@/lib/data/water-isru.json";
-import { DEFAULTS as PLANNER_DEFAULTS } from "@/lib/planner";
+import survey from "@/lib/data/survey.json";
+import readiness from "@/lib/data/readiness.json";
+import { decodePlan, encodePlan, PLAN_DEFAULTS } from "@/lib/share";
 import TraverseSection from "./TraverseSection";
 import ReturnPlanner from "./ReturnPlanner";
 import GobabebSection from "./GobabebSection";
+import ReadinessPanel from "./ReadinessPanel";
 import WaterSection from "./WaterSection";
 import LazySection from "./LazySection";
 import Hero from "./Hero";
@@ -34,17 +37,59 @@ const NAV = [
 ];
 
 const danAvailable = Boolean(water?.dan?.length);
+const SOL_NUMBERS = readiness.weather.sols.map(item => item.sol);
 
 export default function Marswalk() {
   const mapRef = useRef(null);
-  const [routeName, setRouteName] = useState("detour");
+  const [routeName, setRouteName] = useState(PLAN_DEFAULTS.route);
   const [layers, setLayers] = useState({
     imagery: true, contours: true, slope: false, hazard: true, history: true, dan: false,
   });
   const [selectedDanId, setSelectedDanId] = useState(water?.gobabebSample);
-  const [weatherSol, setWeatherSol] = useState(1225);
+  const [weatherSol, setWeatherSol] = useState(PLAN_DEFAULTS.sol);
   const [weatherView, setWeatherView] = useState("sol");
-  const [plannerInputs, setPlannerInputs] = useState(PLANNER_DEFAULTS);
+  const [plannerInputs, setPlannerInputs] = useState(PLAN_DEFAULTS.inputs);
+  const [storm, setStorm] = useState(PLAN_DEFAULTS.storm);
+  const [urlLoaded, setUrlLoaded] = useState(false);
+
+  // Restore a shared plan from the address once on load, then keep the address in sync.
+  useEffect(() => {
+    const shared = decodePlan(window.location.search, { routes: survey.routes, sols: SOL_NUMBERS });
+    /* eslint-disable react-hooks/set-state-in-effect -- one-time sync from the URL, an external source */
+    setRouteName(shared.route);
+    setWeatherSol(shared.sol);
+    setStorm(shared.storm);
+    setPlannerInputs(shared.inputs);
+    setUrlLoaded(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+
+    // Fonts and measured charts shift the layout after the browser's first jump to #section; land again once settled.
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return undefined;
+    let cancelled = false;
+    const land = () => { if (!cancelled) document.getElementById(id)?.scrollIntoView({ behavior: "instant" }); };
+    document.fonts.ready.then(() => requestAnimationFrame(land));
+    const cancel = () => { cancelled = true; };
+    window.addEventListener("wheel", cancel, { once: true, passive: true });
+    window.addEventListener("touchstart", cancel, { once: true, passive: true });
+    return () => {
+      cancel();
+      window.removeEventListener("wheel", cancel);
+      window.removeEventListener("touchstart", cancel);
+    };
+  }, []);
+
+  const planQuery = encodePlan({ route: routeName, sol: weatherSol, storm, inputs: plannerInputs });
+  useEffect(() => {
+    if (!urlLoaded) return;
+    const url = `${window.location.pathname}${planQuery ? `?${planQuery}` : ""}${window.location.hash}`;
+    window.history.replaceState(window.history.state, "", url);
+  }, [planQuery, urlLoaded]);
+
+  const shareUrl = useCallback(
+    () => `${window.location.origin}${window.location.pathname}${planQuery ? `?${planQuery}` : ""}#readiness`,
+    [planQuery],
+  );
 
   const setLayer = useCallback((name, visible) => setLayers(current => ({ ...current, [name]: visible })), []);
 
@@ -83,6 +128,15 @@ export default function Marswalk() {
         />
       </section>
       <ReturnPlanner routeName={routeName} inputs={plannerInputs} onInputsChange={setPlannerInputs} />
+      <ReadinessPanel
+        routeName={routeName}
+        plannerInputs={plannerInputs}
+        sol={weatherSol}
+        onSolChange={setWeatherSol}
+        storm={storm}
+        onStormChange={setStorm}
+        shareUrl={shareUrl}
+      />
       <GobabebSection onShowSamplingWeather={showSamplingWeather} />
       <LazySection id="weather">
         <WeatherSection sol={weatherSol} onSolChange={setWeatherSol} view={weatherView} onViewChange={setWeatherView} />
