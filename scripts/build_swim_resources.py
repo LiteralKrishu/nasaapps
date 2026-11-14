@@ -11,6 +11,9 @@ from PIL import Image, ImageOps
 import rasterio
 from rasterio.enums import Resampling
 
+# JSON data modules imported by the Next.js components.
+DATA_MODULES = Path(__file__).resolve().parents[1] / "lib" / "data"
+
 DEGREES_TO_METRES = 3396190 * math.pi / 180
 SIZE = (1440, 480)
 LAYERS = (
@@ -69,6 +72,7 @@ def build(source, output):
     points = [(lon * DEGREES_TO_METRES, lat * DEGREES_TO_METRES) for lon, lat in coords]
     layers = []
     output.mkdir(parents=True, exist_ok=True)
+    DATA_MODULES.mkdir(parents=True, exist_ok=True)
 
     for key, depth, filename, threshold in LAYERS:
         path = source / filename
@@ -94,8 +98,8 @@ def build(source, output):
         photo.thumbnail((1000, 750), Image.Resampling.LANCZOS)
         photo.save(output / "moxie.webp", quality=86)
     data = {"layers": layers, "sites": sites}
-    (output / "swim-resources.js").write_text(
-        "window.marsResources = " + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n",
+    (DATA_MODULES / "swim-resources.json").write_text(
+        json.dumps(data, separators=(",", ":"), ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
 
@@ -103,6 +107,6 @@ def build(source, output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
-    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "map" / "data")
+    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "public" / "data")
     args = parser.parse_args()
     build(args.source, args.output)

@@ -1,6 +1,6 @@
 # Namib Dune Marswalk
 
-Open [index.html](index.html) in a browser. The page runs offline. Select either route to update the elevation profile. Move over the chart or use its slider to locate a sample on the map. Use the controls to compare imagery, 2 m contours, slope, the dune exclusion zone, and Curiosity’s historical track.
+Run the planner with `npm run dev` from the project root (see the [project README](../README.md)). Select either route to update the elevation profile. Move over the chart or use its slider to locate a sample on the map. Use the controls to compare imagery, 2 m contours, slope, the dune exclusion zone, and Curiosity’s historical track.
 
 | Outbound leg | Distance | Ascent | Peak grade | Distance inside the traced dune zone |
 | --- | ---: | ---: | ---: | ---: |
@@ -13,16 +13,16 @@ The detour adds 37.43 m and has about 8 m of clearance on the routing grid. The 
 
 | Input | Local file and processing |
 | --- | --- |
-| [USGS Gale DEM v3](https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m) | [Elevation GeoTIFF](data/elevation.tif), 1 m grid. The original mosaic is tied to MOLA and assembled from terrain products of different native resolutions. |
-| [USGS Gale orthophoto v3](https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_orthophoto_mosaic_25cm) | [Orthophoto GeoTIFF](data/orthophoto.tif), 0.25 m grid. The map renders a tinted copy of the grayscale source. |
-| [JPL Curiosity PLACES](https://planetarydata.jpl.nasa.gov/img/data/msl/msl_places/data_localizations/) | `localized_interp.csv` supplies the archived easting, northing, elevation, and mission sol. The cropped track is bundled in `data/survey.js`. |
+| [USGS Gale DEM v3](https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m) | [Elevation GeoTIFF](../public/data/elevation.tif), 1 m grid. The original mosaic is tied to MOLA and assembled from terrain products of different native resolutions. |
+| [USGS Gale orthophoto v3](https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_orthophoto_mosaic_25cm) | [Orthophoto GeoTIFF](../public/data/orthophoto.tif), 0.25 m grid. The map renders a tinted copy of the grayscale source. |
+| [JPL Curiosity PLACES](https://planetarydata.jpl.nasa.gov/img/data/msl/msl_places/data_localizations/) | `localized_interp.csv` supplies the archived easting, northing, elevation, and mission sol. The cropped track is bundled in `lib/data/survey.json`. |
 | [NASA Photojournal PIA20281](https://science.nasa.gov/photojournal/slip-face-on-downwind-side-of-namib-sand-dune-on-mars/) | The panel shows Curiosity’s view of the Namib slip face. |
 
 Both rasters share a north-up Mars equirectangular projection (ESRI:103885) and the same projected bounds, from 8,142,270 to 8,142,560 m east and −277,480 to −277,285 m north. The elevation mosaic was resampled onto a shared origin. The orthophoto already matched that origin. The elevation crop has full coverage. About 1.9% of the orthophoto is marked NoData near the western edge, outside the planned route. The mapped sand edge, terrain break and rover passes align visually with the published field map. At 518 archived rover fixes, the median absolute deviation between PLACES elevation and sampled DEM elevation was 0.11 m, with a 95th percentile of 0.39 m. PLACES elevations use an orbital terrain model, so these numbers show consistency between products. [PLACES specification](https://planetarydata.jpl.nasa.gov/w10n/msl/msl_places/document/PLACES_PDS_SIS.pdf)
 
 ## Route and profile method
 
-The dune exclusion is traced from the dark sand boundary and the slip face on the ortho, using the campaign figure to identify the feature. The east edge of the exclusion continues beyond the map. The route search uses a 1 m terrain grid, a 7 m minimum modeled dune margin, a 20° terrain-inclination limit, and a cost penalty for steeper cells. It avoids cells without image coverage. These parameters define the simulated walk. Dune migration and surface conditions between source observations remain uncertain. Profiles sample the DEM every 0.5 m or closer by interpolation. Peak grade is measured along the route over an approximately 5 m baseline. Cumulative ascent uses a 1 m smoothing scale. [Elevation samples](data/profile.csv) · [Published observations of local dune change](https://doi.org/10.1002/2017JE005263)
+The dune exclusion is traced from the dark sand boundary and the slip face on the ortho, using the campaign figure to identify the feature. The east edge of the exclusion continues beyond the map. The route search uses a 1 m terrain grid, a 7 m minimum modeled dune margin, a 20° terrain-inclination limit, and a cost penalty for steeper cells. It avoids cells without image coverage. These parameters define the simulated walk. Dune migration and surface conditions between source observations remain uncertain. Profiles sample the DEM every 0.5 m or closer by interpolation. Peak grade is measured along the route over an approximately 5 m baseline. Cumulative ascent uses a 1 m smoothing scale. [Elevation samples](../public/data/profile.csv) · [Published observations of local dune change](https://doi.org/10.1002/2017JE005263)
 
 ## Return to base
 
@@ -38,7 +38,7 @@ The panel shows Curiosity’s views of Namib’s ripple crests and slip face. Th
 
 The sol timeline covers the two in-field phases of the Bagnold Dunes campaign. Sols 1162–1254 cover High Dune, Namib, and nearby sampling activities. Sols 1602–1660 cover Nathan Bridges Dune and Mount Desert Island. The timeline compresses the interval between phases. Weather measurements apply to Curiosity’s location on the selected sol. [Campaign chronology](https://doi.org/10.1029/2018GL079032)
 
-**Campaign overview** uses the public daily weather summaries published by NASA for outreach. These contain air and ground temperature ranges and pressure for 149 of the 152 campaign sols. **Within sol** uses bundled PDS4 calibrated REMS MODRDR tables for 30-minute local mean solar time (LMST) windows. The values table gives each mean and its accepted record count. The panel uses the daily summary if the associated 30-minute series is unavailable, and leaves missing windows blank. [NASA daily reports](data/rems-daily.csv) · [PDS window data](data/rems-weather.csv)
+**Campaign overview** uses the public daily weather summaries published by NASA for outreach. These contain air and ground temperature ranges and pressure for 149 of the 152 campaign sols. **Within sol** uses bundled PDS4 calibrated REMS MODRDR tables for 30-minute local mean solar time (LMST) windows. The values table gives each mean and its accepted record count. The panel uses the daily summary if the associated 30-minute series is unavailable, and leaves missing windows blank. [NASA daily reports](../public/data/rems-daily.csv) · [PDS window data](../public/data/rems-weather.csv)
 
 The bundle contains 83 calibrated tables, including all 60 sols on the Namib map’s historical track (1185–1244). It has usable weather on 151 campaign sols across both sources. No measurements pass the selected filters on sol 1612, and its daily report is blank. Phase 1 has accepted horizontal wind speeds on 72 sols.
 
@@ -55,7 +55,7 @@ The replay covers May 19–22, 2024 UTC. Curiosity recorded the event elsewhere 
 - **Curiosity RAD** uses Level 2 absorbed dose rate in tissue-equivalent plastic (Detector E, `Total Dose E`). The importer accepts unflagged records with positive dose rates and live time. The background is the median of 413 accepted observations from May 15–19 UTC. The highest single accepted observation reached 8,377.9 µGy/day at 06:15:19 UTC on May 20, about 59.3 times the 141.3 µGy/day background. The unit expresses a rate per 24 Earth hours. [NASA RAD archive](https://spdf.gsfc.nasa.gov/pub/data/aaa_planetary/msl/rad/cdf/obs-l2/2024/)
 - **MAVEN SEP** uses Level 2 calibrated differential ion flux in the forward view of sensor 1. The selected channel has a center of 2,243 keV and a width of 609.6 keV. The importer selects valid times, nonnegative flux values, positive accumulation times, and an open attenuator. The replay uses this one instrument setting throughout. The spacecraft’s orbit, detector view, and attenuator affect coverage. [NASA MAVEN SEP archive](https://spdf.gsfc.nasa.gov/pub/data/maven/sep/l2/s1-cal-svy-full/2024/05/) · [SEP instrument and data guide](https://pds-ppi.igpp.ucla.edu/data/maven-sep-calibrated/document/maven_sis_SEP_v19.pdf)
 
-The importer assigns observations to windows by source timestamp. Each mean uses RAD live time or MAVEN accumulation time as the weight. RAD has observations in all 192 windows. MAVEN has accepted observations in 178 windows. The other 14 MAVEN windows are blank. The CSV includes the sample counts, source filenames, and background value. [Download the replay CSV](data/solar-storm.csv)
+The importer assigns observations to windows by source timestamp. Each mean uses RAD live time or MAVEN accumulation time as the weight. RAD has observations in all 192 windows. MAVEN has accepted observations in 178 windows. The other 14 MAVEN windows are blank. The CSV includes the sample counts, source filenames, and background value. [Download the replay CSV](../public/data/solar-storm.csv)
 
 Install `numpy` and `cdflib` to rebuild the replay. Download the daily CDFs listed in `scripts/build_storm_replay.py` and place them in one directory. Run `python3 scripts/build_storm_replay.py /path/to/products` from the project root.
 
@@ -81,7 +81,7 @@ Install NumPy, Pillow, and Rasterio to rebuild the panel’s data and maps. Down
 
 The explorer uses the InSight Marsquake Service V14 catalog from NASA PDS. It includes all 1,323 events in the catalog’s low- and high-frequency families. The catalog identifies eight of these events as impacts. The explorer omits 1,392 separately classified super-high-frequency signals. The timeline uses the preferred origin time in UTC. It shows the preferred moment magnitude and its reported uncertainty for 672 events. Events without a magnitude have their own row. [NASA PDS collection](https://pds.nasa.gov/ds-view/pds/viewCollection.jsp?identifier=urn%3Anasa%3Apds%3Ainsight_seis%3Adata_derived) · [V14 catalog guide](https://www.seis-insight.eu/static/mqs-catalogs/v14/mars_seismic_catalogue_insight_v14_end_2023-01-01_release_2023-04-01.pdf)
 
-The map plots 22 seismic epicenters and eight impact sites identified in orbital images. For impacts it uses the separate orbital location in the catalog. The catalog uses InSight’s lander coordinates as a placeholder for unresolved locations. The map displays those coordinates only for the lander. For events with distance alone, the map shows the range of possible distances from InSight as a band, or a line at the nominal distance if the record has no bounds. It computes the angular distances on a sphere and displays them in a north-up equirectangular projection. The plotted records give no numerical position bounds. The event card shows the catalog’s A–D quality grade, which describes the signal and the clarity of the seismic phases used to locate it. [InSight location study](https://doi.org/10.1029/2023JE007826) · [Catalog events CSV](data/marsquakes.csv)
+The map plots 22 seismic epicenters and eight impact sites identified in orbital images. For impacts it uses the separate orbital location in the catalog. The catalog uses InSight’s lander coordinates as a placeholder for unresolved locations. The map displays those coordinates only for the lander. For events with distance alone, the map shows the range of possible distances from InSight as a band, or a line at the nominal distance if the record has no bounds. It computes the angular distances on a sphere and displays them in a north-up equirectangular projection. The plotted records give no numerical position bounds. The event card shows the catalog’s A–D quality grade, which describes the signal and the clarity of the seismic phases used to locate it. [InSight location study](https://doi.org/10.1029/2023JE007826) · [Catalog events CSV](../public/data/marsquakes.csv)
 
 The Gale comparison uses the USGS center (5.44° S, 137.70° E) and a circular approximation based on the crater’s 155.30 km diameter. Surface distances use a Mars sphere with a 3,389.5 km radius. The map places InSight about 601 km from Gale’s center and shows zero cataloged source locations within the approximate rim. The closest plotted source is impact S0981c, about 365 km from Gale’s center. The closest plotted seismic epicenter is S0918a, about 1,172 km away. These results describe the located subset. InSight’s single station leaves local shaking and the frequency of quakes at Gale unresolved. [USGS Gale reference](https://planetarynames.wr.usgs.gov/Feature/Gale) · [InSight location study](https://doi.org/10.1029/2023JE007826)
 
@@ -89,12 +89,12 @@ Install Pillow and use Python 3.11 or later to rebuild the files. Download the [
 
 ## Rebuild
 
-The builder uses Python with `numpy`, `scipy`, `rasterio`, `contourpy`, and `Pillow`. Use the aligned GeoTIFFs in this folder or the original v3 mosaics. Supply the PLACES CSV and PIA20281 JPEG from the source list. The script’s help contains their direct URLs.
+The builder uses Python with `numpy`, `scipy`, `rasterio`, `contourpy`, and `Pillow`. Use the aligned GeoTIFFs in `public/data` or the original v3 mosaics. Supply the PLACES CSV and PIA20281 JPEG from the source list. The script’s help contains their direct URLs.
 
 ```sh
 python scripts/build_bagnold.py \\
-  --dem map/data/elevation.tif \\
-  --ortho map/data/orthophoto.tif \\
+  --dem public/data/elevation.tif \\
+  --ortho public/data/orthophoto.tif \\
   --places /path/to/localized_interp.csv \\
   --photo /path/to/PIA20281.jpg \\
   --output /path/to/generated-map-data

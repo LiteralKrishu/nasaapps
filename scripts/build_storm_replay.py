@@ -9,6 +9,9 @@ from pathlib import Path
 import numpy as np
 from cdflib import CDF, cdfepoch
 
+# JSON data modules imported by the Next.js components.
+DATA_MODULES = Path(__file__).resolve().parents[1] / "lib" / "data"
+
 START = datetime(2024, 5, 19, tzinfo=timezone.utc)
 DAYS = 4
 WINDOW_MINUTES = 30
@@ -122,7 +125,7 @@ def aggregate(source, products, read_cdf):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path, help="Directory with May 15–22 RAD and May 19–22 SEP CDFs")
-    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "map" / "data")
+    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "public" / "data")
     args = parser.parse_args()
     rad, peak = aggregate(args.source, RAD_PRODUCTS, rad_observations)
     maven, _ = aggregate(args.source, MAVEN_PRODUCTS, maven_observations)
@@ -138,6 +141,7 @@ def main():
         "rows": [rad_bin + maven_bin for rad_bin, maven_bin in zip(rad, maven)],
     }
     args.output.mkdir(parents=True, exist_ok=True)
+    DATA_MODULES.mkdir(parents=True, exist_ok=True)
     with (args.output / "solar-storm.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream)
         writer.writerow(["utc_window_start", "utc_window_end", "rad_e_uGy_per_day", "rad_samples",
@@ -148,8 +152,8 @@ def main():
             end = start + timedelta(minutes=WINDOW_MINUTES)
             day = (start - START).days
             writer.writerow([iso_utc(start), iso_utc(end), *row, background["value"], RAD_PRODUCTS[day], MAVEN_PRODUCTS[day]])
-    (args.output / "solar-storm.js").write_text(
-        "window.marsStorm = " + json.dumps(data, separators=(",", ":"), allow_nan=False) + ";\n",
+    (DATA_MODULES / "solar-storm.json").write_text(
+        json.dumps(data, separators=(",", ":"), allow_nan=False) + "\n",
         encoding="utf-8",
     )
     print(f"{sum(bool(row[1]) for row in data['rows'])} RAD windows, "

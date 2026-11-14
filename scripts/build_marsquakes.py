@@ -12,6 +12,9 @@ import xml.etree.ElementTree as ET
 
 from PIL import Image, ImageOps
 
+# JSON data modules imported by the Next.js components.
+DATA_MODULES = Path(__file__).resolve().parents[1] / "lib" / "data"
+
 
 NS = {"b": "http://quakeml.org/xmlns/bed/1.2", "m": "http://quakeml.org/xmlns/bed/1.2/mars"}
 CATALOG_HASH = "4c33de988267aab4acd0c1ddd768e70c7892a9770941accf40dba89e08fb0d79"
@@ -116,8 +119,8 @@ def write_catalog(rows, output):
         "nearestNonImpact": {"id": nearest_quake_id, "km": round(nearest_quake_distance)},
     }
     data = {"version": "14", "sha256": CATALOG_HASH, "insight": INSIGHT, "gale": gale, "events": rows}
-    (output / "marsquakes.js").write_text(
-        "window.MARSQUAKE_CATALOG = " + json.dumps(data, separators=(",", ":"), allow_nan=False) + ";\n",
+    (DATA_MODULES / "marsquakes.json").write_text(
+        json.dumps(data, separators=(",", ":"), allow_nan=False) + "\n",
         encoding="utf-8",
     )
     with (output / "marsquakes.csv").open("w", encoding="utf-8", newline="") as stream:
@@ -158,10 +161,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("catalog", type=Path)
     parser.add_argument("tiles", type=Path, help="Directory with west and east MOLA root tiles")
-    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "map/data")
+    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "public/data")
     args = parser.parse_args()
     rows = load_catalog(args.catalog)
     args.output.mkdir(parents=True, exist_ok=True)
+    DATA_MODULES.mkdir(parents=True, exist_ok=True)
     build_basemap(args.tiles, args.output / "marsquake-basemap.webp")
     write_catalog(rows, args.output)
 
