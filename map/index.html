@@ -10,12 +10,14 @@
   <script src="data/solar-storm.js" defer></script>
   <script src="data/water-isru.js" defer></script>
   <script src="data/swim-resources.js" defer></script>
+  <script src="data/marsquakes.js" defer></script>
   <script src="map.js" defer></script>
   <script src="planner.js" defer></script>
   <script src="weather.js" defer></script>
   <script src="storm.js" defer></script>
   <script src="water.js" defer></script>
   <script src="resources.js" defer></script>
+  <script src="marsquakes.js" defer></script>
 </head>
 <body>
   <main>
@@ -35,6 +37,7 @@
       <a href="#solar-storm">Radiation &amp; space weather</a>
       <a href="#water">Water &amp; ISRU</a>
       <a href="#resource-exploration">Regional ice &amp; MOXIE</a>
+      <a href="#marsquakes">Marsquakes</a>
     </nav>
     <div class="layout" id="traverse">
       <section class="survey" aria-label="Marswalk map and elevation profile">
@@ -440,6 +443,97 @@
           <a href="#moxie-title">MOXIE oxygen results ↑</a>
         </div>
       </section>
+    </section>
+    <section class="detail-panel" id="marsquakes" aria-labelledby="marsquakes-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="marsquakes-title">Marsquakes</h2>
+          <p>Explore seismic signals NASA’s InSight lander recorded from 2019 to 2022. The map shows estimated quake sources and impact sites identified in orbital images.</p>
+        </div>
+        <span class="data-tag">InSight · Catalog V14</span>
+      </div>
+      <p id="quake-unavailable" class="section-note" hidden>The bundled InSight catalog could not be loaded.</p>
+      <div id="quake-explorer" hidden>
+        <div class="quake-filters">
+          <label>Earth year
+            <select id="quake-year"><option value="">All years</option></select>
+          </label>
+          <label>Location evidence
+            <select id="quake-location">
+              <option value="">All events</option>
+              <option value="epicenter">Mapped epicenter</option>
+              <option value="distance">Distance only</option>
+              <option value="bearing">Direction only</option>
+              <option value="none">No location estimate</option>
+            </select>
+          </label>
+          <p id="quake-count" class="section-note"></p>
+        </div>
+        <div class="quake-overview">
+          <figure class="quake-globe">
+            <div class="quake-map">
+              <img src="data/marsquake-basemap.webp" width="1024" height="512" alt="Global Mars topography from 180° W to 180° E, north up" loading="lazy">
+              <svg viewBox="0 0 360 180" aria-hidden="true">
+                <path d="M60 0V180M120 0V180M180 0V180M240 0V180M300 0V180M0 30H360M0 60H360M0 90H360M0 120H360M0 150H360"/>
+              </svg>
+              <canvas id="quake-area" width="720" height="360" aria-hidden="true"></canvas>
+              <div id="quake-markers" role="group" aria-label="Mapped epicenters"></div>
+              <span id="quake-insight" class="quake-insight" title="InSight lander" aria-hidden="true"></span>
+              <span id="quake-gale" class="quake-gale" title="Gale Crater center" aria-hidden="true"></span>
+            </div>
+            <figcaption class="quake-legend">
+              <span><i class="quake-dot"></i>Epicenter</span>
+              <span><i class="quake-impact"></i>Impact</span>
+              <span><i class="quake-station"></i>InSight</span>
+              <span><i class="quake-gale"></i>Gale Crater</span>
+              <span><i class="quake-range"></i>Selected distance evidence</span>
+            </figcaption>
+          </figure>
+          <article class="quake-event" aria-labelledby="quake-event-title">
+            <div class="quake-event-heading">
+              <h3 id="quake-event-title"></h3>
+              <span id="quake-event-type"></span>
+            </div>
+            <p id="quake-date" class="section-note"></p>
+            <dl id="quake-event-readings" class="readings">
+              <div><dt>Moment magnitude</dt><dd id="quake-magnitude"></dd></div>
+              <div><dt>Signal quality</dt><dd id="quake-quality"></dd></div>
+              <div><dt>Epicenter</dt><dd id="quake-epicenter"></dd></div>
+              <div><dt>Distance / direction from InSight</dt><dd id="quake-distance"></dd></div>
+            </dl>
+            <p id="quake-uncertainty" class="section-note"></p>
+          </article>
+        </div>
+        <div class="quake-timeline">
+          <h3>Event timeline</h3>
+          <canvas id="quake-chart" role="img" aria-label="Events by UTC date and moment magnitude, with a separate row for events without a magnitude" aria-describedby="quake-chart-note"></canvas>
+          <p id="quake-chart-note" class="section-note">Select a point or use the event controls. The vertical bar shows the selected event’s magnitude uncertainty.</p>
+          <div class="quake-navigation">
+            <label for="quake-time">Browse in time order</label>
+            <input id="quake-time" type="range" min="0" max="0" step="1" value="0">
+            <label class="sr-only" for="quake-event-select">Catalog event</label>
+            <div class="quake-step">
+              <button id="quake-previous" type="button" aria-label="Previous event">‹</button>
+              <select id="quake-event-select"></select>
+              <button id="quake-next" type="button" aria-label="Next event">›</button>
+            </div>
+          </div>
+        </div>
+        <p id="quake-announcement" role="status" class="sr-only"></p>
+        <p class="section-note">A shaded band shows the published distance bounds in every direction. A narrow line shows an estimated distance when the archive gives no bounds. Some events have only a direction or no location estimate.</p>
+        <section class="quake-gale-context" aria-labelledby="quake-gale-title">
+          <h3 id="quake-gale-title">What InSight tells us about Gale</h3>
+          <p id="quake-gale-summary" class="section-note"></p>
+          <p class="section-note">InSight measured shaking at one station in Elysium Planitia. Many located events cluster near Cerberus Fossae, east of the lander. Many other records give a distance without a direction. The catalog leaves Gale’s local shaking and quake frequency unresolved.</p>
+        </section>
+        <div class="data-links">
+          <a href="data/marsquakes.csv" download>Download events CSV</a>
+          <a href="https://pds.nasa.gov/ds-view/pds/viewCollection.jsp?identifier=urn%3Anasa%3Apds%3Ainsight_seis%3Adata_derived">NASA PDS catalog</a>
+          <a href="README.md#marsquakes">Catalog and map methods</a>
+          <a href="https://planetarynames.wr.usgs.gov/Feature/Gale">USGS Gale Crater reference</a>
+          <a href="https://doi.org/10.1029/2023JE007826">InSight seismicity study</a>
+        </div>
+      </div>
     </section>
     <footer>
       <p>Terrain and imagery by USGS Astrogeology, NASA, JPL-Caltech, and the University of Arizona. Rover track from NASA PDS PLACES. Surface photo by NASA/JPL-Caltech.</p>
