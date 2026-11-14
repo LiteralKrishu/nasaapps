@@ -8,7 +8,7 @@ export default function Hero() {
   return (
     <header className="hero">
       <div className="hero-copy">
-        <p className="location">MARTIAN MAP <span></span> GALE CRATER · 4.7° S 137.4° E</p>
+        <p className="location">MARTIAN MAP <span></span> GALE CRATER <em className="coords">· 4.7° S 137.4° E</em></p>
         <h1>Namib Dune</h1>
         <p className="hero-lede">
           Plan the first human Marswalk to an active dune on Mars. Choose a safe route, budget your suit’s
