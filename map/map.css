@@ -55,6 +55,7 @@ aside { display: grid; gap: 12px; }
 .stats dt { color: var(--muted); font-size: 10px; }
 .stats dd { margin: 3px 0 0; font-size: clamp(15px,2.1vw,20px); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .explanation, .science p { font-size: 13px; line-height: 1.48; color: var(--muted); margin-bottom: 0; }
+.route-plan-link { display: inline-block; font-size: 12px; margin-top: 9px; }
 .layer { margin-top: 11px; display: grid; grid-template-columns: 13px 1fr auto; gap: 7px; align-items: center; font-size: 13px; cursor: pointer; }
 .layer input { margin: 0; accent-color: var(--accent); }
 .swatch { height: 8px; background: var(--paper); }
@@ -169,6 +170,22 @@ select:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 .planner-result[data-result="pending"] { border-color: var(--line); }
 .planner-result p:last-child { margin: 4px 0 0; }
 #return-status { font-size: 14px; margin: 12px 0 0; }
+.return-timeline { margin-top: 20px; }
+.return-timeline h3 { font-size: 16px; margin: 0; }
+.return-track { position: relative; background: var(--bg); border: 1px solid var(--line); margin: 10px 2px 13px; }
+#return-track-phases { display: flex; height: 14px; }
+#return-track-phases span { display: block; background: var(--phase-color); }
+#return-timeline [data-phase="outbound"] { --phase-color: var(--accent); }
+#return-timeline [data-phase="stop"] { --phase-color: var(--paper); }
+#return-timeline [data-phase="delay"] { --phase-color: var(--hazard); }
+#return-timeline [data-phase="inbound"] { --phase-color: var(--history); }
+#return-reserve-marker {
+  position: absolute; top: -4px; bottom: -4px; transform: translateX(-50%); width: 2px;
+  background: var(--ink); box-shadow: 0 0 0 1px var(--bg);
+}
+#return-phases { grid-template-columns: repeat(auto-fit, minmax(min(100%, 135px), 1fr)); }
+#return-phases > div { padding-left: 9px; border-left: 2px solid var(--phase-color); }
+#return-phases span { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .readings { margin: 0; }
 .readings dt { font-size: 12px; color: var(--muted); }
 .readings dd { margin: 4px 0 2px; font-size: clamp(16px, 2vw, 21px); font-variant-numeric: tabular-nums; }

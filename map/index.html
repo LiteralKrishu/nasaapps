@@ -83,6 +83,7 @@
             <div><dt>Peak slope</dt><dd id="grade">—</dd></div>
           </dl>
           <p class="explanation" id="route-note"></p>
+          <a class="route-plan-link" href="#return">Check return budget ↓</a>
         </section>
         <section class="side-panel">
           <h2>Layers</h2>
@@ -109,7 +110,7 @@
       <div class="detail-heading">
         <div>
           <h2 id="return-title">Return to base</h2>
-          <p>Plan the round trip on the selected traverse, including time at the observation stop.</p>
+          <p>Plan the round trip on the selected traverse and see how much time you have for science and delays.</p>
         </div>
         <span class="data-tag" id="return-route"></span>
       </div>
@@ -118,6 +119,7 @@
           <label>Outbound pace <span>m/s</span><input name="outbound" type="number" min="0.05" max="5" step="0.01" value="0.70" required></label>
           <label>Return pace <span>m/s</span><input name="inbound" type="number" min="0.05" max="5" step="0.01" value="0.60" required></label>
           <label>Time at stop <span>min</span><input name="stop" type="number" min="0" max="1440" step="0.1" value="15" required></label>
+          <label>Delay at stop <span>min</span><input name="delay" type="number" min="0" max="1440" step="0.1" value="0" required></label>
         </div>
         <table class="data-table budget-table">
           <caption>Suit endurance and reserve in Earth minutes</caption>
@@ -142,9 +144,17 @@
           <div><dt>Latest departure from stop</dt><dd id="latest-departure">—</dd></div>
         </dl>
         <p id="return-status" role="status"></p>
-        <p id="travel-breakdown" class="section-note"></p>
       </div>
-      <p class="section-note">The calculator uses the same path in both directions. Enter average paces for the terrain and resource endurance at the planned workload. The starting values are illustrative. The model assumes constant use and accounts for delays only if you include them in the plan.</p>
+      <section id="return-timeline" class="return-timeline" aria-labelledby="return-timeline-title" hidden>
+        <h3 id="return-timeline-title">Trip timeline</h3>
+        <p id="return-reserve-note" class="section-note"></p>
+        <div class="return-track" aria-hidden="true">
+          <div id="return-track-phases"></div>
+          <i id="return-reserve-marker" hidden></i>
+        </div>
+        <dl id="return-phases" class="readings"></dl>
+      </section>
+      <p class="section-note">The simulation uses the same path both ways and assumes constant resource use. Enter average walking paces and suit endurance for the planned workload. Delays are modeled at the stop before return. The starting values are illustrative.</p>
     </section>
 
     <section class="detail-panel" id="gobabeb" aria-labelledby="gobabeb-title">

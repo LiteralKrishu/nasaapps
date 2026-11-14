@@ -28,7 +28,7 @@ The dune exclusion is traced from the dark sand boundary and the slip face on th
 
 The calculator uses the selected outbound distance in each direction. It divides that distance by each walking pace and adds time at the stop. Enter endurance and minimum reserves as Earth minutes at the expected workload for each resource. Available time above reserve is departure endurance minus reserve. The smallest such value sets the overall time limit. The calculator subtracts round-trip time to find the remaining margin and subtracts return travel time to find the latest departure from the stop. It reports each resource’s endurance at arrival and shows a terrain warning for the direct crossing.
 
-The presets are illustrative. The model uses the entered pace and constant resource use. Use inputs that account for the expected terrain, workload, and any planned delay.
+The timeline shows outbound travel, science time, delay at the stop, and return travel. It marks when the first resource reaches reserve and identifies the phase if that happens during the trip. The time available at the stop is the time above reserve minus both travel legs. It includes science and any delay. The model uses the entered pace and constant resource use. The starting values are illustrative.
 
 ## Gobabeb science
 
