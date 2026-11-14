@@ -1,38 +1,80 @@
-# Interplanetary Survival Guide: Martian Map
-## NASA Space Apps Challenge 2026 — Research Documentation & Project Summary
+# Namib Dune · Marswalk planner
+
+**Plan the first human Marswalk to an active dune on Mars, then make the go / no-go call.**
 
 [![NASA Space Apps Challenge 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-blue.svg)](https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-## Bagnold Dunes Marswalk planner
 
-The planner is a [Next.js](https://nextjs.org/) and React app. With Node.js 20 or later installed, run it from the project root:
+![Marswalk planner hero: Namib Dune over HiRISE imagery of Gale Crater](docs/screenshots/hero.jpg)
+
+## The problem
+
+An astronaut at Gale Crater is 3 to 22 minutes from Mission Control, one way. Before stepping outside they need one view that answers practical questions. Is the route safe underfoot? Will the suit’s oxygen, CO₂ removal, battery and cooling last if something goes wrong at the stop? What are the weather, the radiation and the ground doing? NASA has measured all of this, but the measurements are spread across a dozen missions and archives.
+
+## What the planner does
+
+It brings data from Curiosity, the Mars Reconnaissance Orbiter, MAVEN, InSight, Perseverance and the SWIM ice maps together on one page. That page walks an astronaut through a Marswalk around Namib Dune, from route choice to a final go / no-go decision.
+
+| Step | What you do | NASA data |
+| --- | --- | --- |
+| 01 · [Choose a route](components/TraverseSection.jsx) | Compare a detour that clears the dune with the direct line, on a zoomable map with slope, contours, Curiosity’s track and DAN samples, plus an elevation profile. | HiRISE 1 m DEM & orthophoto, PDS PLACES rover track, DAN |
+| 02 · [Return to base](components/ReturnPlanner.jsx) | Enter walking paces, time at the stop, delays and suit consumables. See margin, the limiting resource, the latest departure and a trip timeline. | Route geometry from step 01 |
+| 03 · [Go / no-go](components/ReadinessPanel.jsx) | Get one verdict from five checks: terrain, suit budget, weather on the chosen sol, radiation (with a solar-storm alert) and marsquakes. Share the plan as a link. | REMS, RAD, InSight catalog |
+| 04 · [Gobabeb science](components/GobabebSection.jsx) | Explore what Curiosity learned from the dune sand it sampled. | Mastcam, CheMin, APXS |
+| 05 · [Weather](components/WeatherSection.jsx) | Scrub through two Bagnold campaigns of air and ground temperature, pressure and wind. | Curiosity REMS |
+| 06 · [Radiation](components/StormSection.jsx) | Replay the May 2024 solar storm at the surface and in orbit. | Curiosity RAD, MAVEN SEP |
+| 07 · [Water & ISRU](components/WaterSection.jsx) | Compare shallow hydrogen readings with regional ice maps. | Curiosity DAN, SWIM |
+| 08 · [Ice & MOXIE](components/ResourcesSection.jsx) | Compare ice evidence at candidate sites and review MOXIE’s oxygen results. | SWIM, Perseverance MOXIE |
+| 09 · [Marsquakes](components/QuakeSection.jsx) | Browse 1,323 InSight events on a linked map and timeline, with Gale’s seismic context. | InSight SEIS catalog |
+
+![Go / no-go readiness panel showing a no-go verdict for the direct route](docs/screenshots/readiness.jpg)
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/traverse.jpg" alt="Traverse map with the detour route around the Namib Dune exclusion zone" /></td>
+    <td width="28%"><img src="docs/screenshots/mobile.jpg" alt="Planner on a phone" /></td>
+  </tr>
+</table>
+
+The [data and methods notes](docs/methods.md) explain every number on the page, including the go / no-go thresholds. Those thresholds are illustrative planning limits, not NASA flight rules.
+
+## Run it
+
+You need Node.js 20 or later.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open http://localhost:3000. For a production build, run `npm run build` followed by `npm start`.
+Then open http://localhost:3000.
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Development server with hot reload |
+| `npm run build` then `npm start` | Production build and server (the page is prerendered as static HTML) |
+| `npm test` | Vitest unit tests for the return planner, readiness checks and plan links |
+| `npm run lint` | ESLint with the Next.js Core Web Vitals rules |
+| `npm run data:readiness` | Rebuilds the compact readiness summary after the Python builders refresh the data |
+
+### Deploy
+
+The app is a standard Next.js project and deploys to [Vercel](https://vercel.com/new) with no configuration. Set `NEXT_PUBLIC_SITE_URL` to the public address if it is not on Vercel, so link previews resolve.
+
+### Project layout
 
 | Path | Contents |
 | --- | --- |
-| `app/` | Next.js App Router entry (`layout.jsx`, `page.jsx`) and global styles |
-| `components/` | One React component per planner section |
-| `lib/data/` | JSON data modules generated by `scripts/` and imported by the components |
-| `public/data/` | Imagery, GeoTIFFs and CSV downloads served as static files |
-| `scripts/` | Python builders that regenerate the data from NASA archives |
+| `app/` | Next.js App Router entry, global styles, icon and link-preview image |
+| `components/` | One React component per step, plus the hero and section menu |
+| `lib/` | Pure logic (`planner.js`, `readiness.js`, `share.js`, `quakes.js`) and JSON data in `lib/data/` |
+| `public/data/` | Imagery, GeoTIFFs and CSV downloads |
+| `scripts/` | Builders that regenerate the data from NASA archives |
+| `tests/` | Unit tests |
 
-## Planner features
+### Built with
 
-- [Traverse map and elevation profile](components/TraverseSection.jsx). Toggle HiRISE imagery, contours, slope, dune exclusion, the rover track, and DAN samples. Compare the Namib detour with the direct route.
-- [Return-to-base planner](components/ReturnPlanner.jsx). Set outbound and return walking paces, science time, and an optional delay at the stop. Enter reserves for oxygen, CO₂ removal, battery, and cooling water. The trip timeline shows each phase and marks when the first resource reaches its reserve.
-- [Gobabeb science stop](components/GobabebSection.jsx). Explore Curiosity imagery, sample chemistry and mineralogy, grain sizes, and the thermal behavior of dune sand.
-- [Curiosity weather timeline](components/WeatherSection.jsx). Browse available air and ground temperatures and pressure across both Bagnold campaign phases. Wind readings are available for 72 sols in the first phase only.
-- [May 2024 solar storm replay](components/StormSection.jsx). Compare Curiosity RAD surface dose rates with the pre-storm background and MAVEN’s orbital ion flux on a shared timeline.
-- [Water and ISRU](components/WaterSection.jsx). Inspect Curiosity DAN hydrogen estimates and NASA SWIM ice evidence by depth, with gaps marked where map data are missing. The [regional resource view](components/ResourcesSection.jsx) compares sites and shows Perseverance’s MOXIE oxygen production results.
-- [Marsquake explorer](components/QuakeSection.jsx). Browse InSight events on a linked global map and timeline. Filter by year and location evidence, inspect reported magnitudes and location uncertainty, and compare the mapped events with Gale Crater.
-
-[Planner data and methods](docs/methods.md)
+Next.js 16, React 19, plain CSS, SVG and Canvas. There is no map or chart library: every layer and chart is drawn from the bundled NASA data. Heavy sections load on demand, so the first page load carries only the route, planner and readiness data.
 
 ## 📌 Challenge Information
 
@@ -140,7 +182,7 @@ The project synthesizes multi-mission datasets into an integrated 5-layer operat
 
 ### 4. EVA Route Planning & Mission Walkthrough Criteria
 
-The Bagnold Dunes planner shows Curiosity’s track, routes around and across the dune slip face, and the science behind the Gobabeb sample. The return calculator reports the round-trip time and resource margin using the paces and suit endurance you enter. [Route and data methods](docs/methods.md)
+The Bagnold Dunes planner shows Curiosity’s track, routes around and across the dune slip face, and the science behind the Gobabeb sample. The return calculator reports the round-trip time and resource margin using the paces and suit endurance you enter. The go / no-go panel combines terrain, suit budget, weather, radiation and seismic checks into one call. [Route and data methods](docs/methods.md)
 
 ---
 

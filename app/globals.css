@@ -662,3 +662,4 @@ button:not(:disabled):not([aria-pressed=true]):hover { border-color: var(--accen
   .readiness-checks li { grid-template-columns: 4px minmax(0, 1fr); }
   .readiness-checks a { grid-column: 2; justify-self: start; }
 }
+.location .coords { font-style: normal; white-space: nowrap; }

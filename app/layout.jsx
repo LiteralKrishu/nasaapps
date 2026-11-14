@@ -5,14 +5,25 @@ const sans = Instrument_Sans({ subsets: ["latin"], variable: "--font-sans", disp
 const serif = Instrument_Serif({ subsets: ["latin"], weight: "400", variable: "--font-serif", display: "swap" });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-mono", display: "swap" });
 
+const DESCRIPTION = "Plan a safe Marswalk around Namib Dune in Gale Crater: route, suit budget, weather, radiation and marsquakes from NASA Curiosity, MRO, MAVEN, InSight, Perseverance and SWIM data, with a go / no-go call.";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL
+  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
+
 export const metadata = {
-  title: "Namib Dune · Martian Map",
-  description: "Plan a Marswalk around Namib Dune in Gale Crater using NASA Curiosity, MAVEN, SWIM, MOXIE and InSight data.",
+  metadataBase: new URL(SITE_URL),
+  title: "Namib Dune · Marswalk planner",
+  description: DESCRIPTION,
+  applicationName: "Marswalk planner",
+  keywords: ["Mars", "Gale Crater", "Namib Dune", "Curiosity", "EVA planning", "NASA Space Apps"],
+  openGraph: { title: "Namib Dune · Marswalk planner", description: DESCRIPTION, type: "website" },
+  twitter: { card: "summary_large_image", title: "Namib Dune · Marswalk planner", description: DESCRIPTION },
 };
 
 export const viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#151613",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }) {
