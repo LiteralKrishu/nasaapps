@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import data from "@/lib/data/weather.json";
-import { cssVar, METHODS_URL, niceStep, prepareCanvas, useElementSize } from "@/lib/hooks";
+import { canvasFont, cssVar, METHODS_URL, niceStep, prepareCanvas, useElementSize } from "@/lib/hooks";
 
 const SERIES = [
   { name: "Air temperature", short: "Air", unit: "°C", color: "--history" },
@@ -52,7 +52,7 @@ function campaignTracks(selected) {
 function drawChart(canvas, width, height, { sol, tracks, campaign }) {
   const ctx = prepareCanvas(canvas, width, height);
   if (!ctx) return;
-  ctx.font = "11px monospace";
+  ctx.font = canvasFont(11);
   ctx.fillStyle = cssVar("--muted");
   const values = tracks.flatMap(track => track.values.flat()).filter(value => value !== null);
   if (!values.length) {
