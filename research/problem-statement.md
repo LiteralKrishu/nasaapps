@@ -9,6 +9,8 @@
 * **Official URL:** [NASA Space Apps Challenge 2026 - Interplanetary Survival Guide: Martian Map](https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/)
 * **Organized By:** NASA Science Mission Directorate in partnership with Booz Allen Hamilton, Mindgrub, and SecondMuse.
 
+The challenge objective is an integrated map, tool, or interface for one location or route using multiple NASA missions. The brief suggests at least three types of data and allows static, interactive, historical, and modeled presentations. The objectives and deliverables below describe the team’s proposed implementation. [Challenge text and resource list](https://hackathlone.com/challenges/interplanetary-survival-guide-martian-map) · [Project data audit](challenge-data-audit.md)
+
 ---
 
 ## Official Challenge Description & Excerpt
@@ -36,9 +38,9 @@ Future astronauts conducting Extravehicular Activities (EVAs) on the Martian sur
 
 Unlike Apollo moonwalkers who had direct real-time mission control assistance, Martian astronauts must operate with near-complete tactical autonomy. To survive and conduct high-value science, crew members require a unified, multi-layered, localized geospatial visualization tool that integrates topographic hazards, atmospheric dynamics, life-support constraints, and high-priority geological waypoints into an actionable navigation system.
 
-### Core Objectives
+### Proposed project objectives
 1. **Hyperlocalized Focus Area:** Select a specific high-priority exploration site or route (e.g., Mount Sharp in Gale Crater, Jezero Crater delta, Valles Marineris canyon rims, or unexplored volcanic/subsurface ice corridors).
-2. **Multi-Source Data Integration:** Integrate **at least three distinct types of planetary scientific data**—such as:
+2. **Multi-Source Data Integration:** Aim for **at least three types of planetary data**. Candidate inputs include:
    * **Optical / Imagery:** High-resolution orthomosaics (HiRISE, CTX, rover navcams).
    * **Topographic / Elevation:** Laser altimetry and stereo digital elevation models (MOLA, HiRISE DTMs).
    * **Thermal / Thermophysical:** Day/night surface temperatures and thermal inertia (THEMIS).
@@ -72,17 +74,17 @@ Teams may explore several operational form factors and architectural implementat
 
 ---
 
-## Expected Requirements & Deliverables
+## Proposed project deliverables
 
-For the NASA Space Apps Challenge submission, the expected deliverables include:
+The team’s proposed demo includes these deliverables. Follow the 2026 submission guide for event rules. [Project Submission Guide](https://www.spaceappschallenge.org/resources/project-submission-guide/) · [Submission clarification](https://github.com/nasa/spaceapps/discussions/1947)
 
 | Deliverable | Description |
 | :--- | :--- |
 | **Interactive Map / Tool** | A functional digital tool or interface allowing astronauts or mission planners to toggle layers (elevation, slope, temperature, radiation, science targets) and inspect navigation paths. |
 | **Comprehensive Documentation** | Clear architectural breakdown explaining how NASA data was parsed, processed, georeferenced, and synthesized. |
-| **Use Case Walkthrough** | A concrete scenario detailing a simulated "Marswalk" (e.g., a 6-hour EVA covering a 2.5 km traverse to investigate sedimentary strata, including hazard avoidance and contingency routes). |
+| **Use Case Walkthrough** | A simulated Bagnold Dunes Marswalk with a science stop, a terrain detour, and a return check. |
 | **Open Source Repository** | Clean, well-documented source code deposited on GitHub with open-source licensing. |
-| **Project Presentation / Video** | Standard Space Apps project pitch deck and optional 30-to-240-second demonstration video summarizing the solution. |
+| **Project Presentation / Video** | A short demonstration. The event clarification gives up to 30 seconds for video or seven slides for a presentation. |
 
 ---
 

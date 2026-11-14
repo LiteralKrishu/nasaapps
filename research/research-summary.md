@@ -9,11 +9,8 @@
 * **Official URL:** [https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/](https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/)
 * **Official Prompt:** Create a layered, integrated view of a location or route on the Martian surface that pulls together data from multiple NASA science missions to help human explorers plan and carry out a successful Marswalk while conducting new and exciting science along the way.
 * **The Core Problem:** Unlike Apollo lunar missions with instantaneous ground communication, astronauts on Mars will operate under a 3.1-to-22.3-minute one-way communication latency. They must survive lethal surface conditions (near-vacuum pressure, radiation, sub-zero cold, and perchlorate dust) using localized, highly autonomous navigation and decision-support tools.
-* **Core Deliverables Required:**
-  1. Interactive layered map or route planner integrating at least three distinct planetary datasets.
-  2. Architectural documentation detailing dataset retrieval, processing, and visualization.
-  3. Simulated Marswalk use-case scenario demonstrating hazard mitigation and scientific waypoints.
-  4. Open-source code repository with clear documentation and presentation pitch deck.
+* **Challenge scope.** The brief asks for an integrated view from multiple NASA missions. It suggests at least three data types and permits static, historical and modeled views. The team’s proposed deliverable is one simulated Marswalk with a science stop and a documented detour. [Challenge brief](https://hackathlone.com/challenges/interplanetary-survival-guide-martian-map)
+* **Prototype data.** Start with the [challenge data audit](challenge-data-audit.md) and the [sample Gale weather observations](data/gale-rems-sam-weather-samples.csv).
 
 ---
 
@@ -21,12 +18,12 @@
 
 | Hazard / Parameter | Environmental Reality on Mars | Physiological & Operational Impact | Mitigation & System Requirement |
 | :--- | :--- | :--- | :--- |
-| **Atmospheric Pressure** | $\sim 6.1\text{ hPa}$ ($<1\%$ of Earth; below Armstrong Limit of $\sim 63\text{ hPa}$) | Immediate ebullism (body fluids boil at $37^\circ\text{C}$); asphyxiation within seconds. | Pressurized EVA spacesuits ($20\text{--}30\text{ kPa}$ pure $O_2$); rigid pressure seals. |
-| **Atmospheric Composition** | 95.3% $\text{CO}_2$, 2.6% $\text{N}_2$, 1.9% $\text{Ar}$, 0.16% $\text{O}_2$ | Toxic for inhalation; ambient air cannot be breathed directly. | Closed-loop life support; MOXIE-style ISRU electrolysis of $\text{CO}_2$ to generate $\text{O}_2$. |
-| **Surface Temperature** | Diurnal equatorial swing: $+20^\circ\text{C}$ midday to $-80^\circ\text{C}$ night; polar lows of $-140^\circ\text{C}$ | Steep vertical thermal gradient ($+20^\circ\text{C}$ at feet vs. $0^\circ\text{C}$ at head); battery depletion; material embrittlement. | Spacesuit Liquid Cooling & Ventilation Garments (LCVG); heater-assisted electronics; diurnal travel windows. |
-| **Radiation Environment** | No global magnetic field. GCR baseline $\approx 0.64\text{ mSv/day}$ ($\sim 230\text{ mSv/yr}$); SPE solar proton flares $>1,000\text{ mSv}$ | Elevated long-term cancer risk; acute radiation sickness (ARS) from coronal mass ejections. | Space weather telemetry alerts; mapping topographical shelters (lava tubes, canyon overhangs, regolith berms). |
-| **Regolith & Perchlorates** | Soil contains 0.5%–1.0% toxic perchlorates ($\text{ClO}_4^-$); abrasive angular basalt dust | Endocrine disruption, thyroid failure, pulmonary inflammation if dust is inhaled in habitat. | Multi-stage airlock cleaning, suitports, electrostatic repulsion, sacrificial dust covers. |
-| **Topography & Traversability** | Extreme relief ($-8.2\text{ km}$ to $+21.9\text{ km}$ vs. MOLA Areoid). Regolith angle of repose $30^\circ\text{--}34^\circ$ | Slopes $>15^\circ$ cause metabolic strain; slopes $>25^\circ$ risk avalanches, rover rollovers, and falls. | Dynamic slope gradient heatmaps ($0^\circ\text{--}15^\circ$ green, $15^\circ\text{--}25^\circ$ yellow, $>25^\circ$ red hazard). |
+| **Atmospheric Pressure** | Global reference about 6.1 hPa. Pressure at Gale varies with time and location. | The crew needs a pressurized environment. | Use dated REMS pressure for the local conditions view. |
+| **Atmospheric Composition** | Gale annual means include 95.1% CO₂, 2.59% N₂, 1.94% ⁴⁰Ar, and 0.161% O₂. | The ambient atmosphere cannot support breathing. | Use SAM composition as site context. |
+| **Surface Temperature** | Air and ground temperatures vary with local time and season. | Thermal loads vary by conditions and equipment. | Keep the air and ground observations separate. |
+| **Radiation Environment** | Early Gale dose equivalent was about 0.64 ± 0.12 mSv/day. JPL reported 8,100 µGy absorbed dose for the 20 May 2024 solar event. | Exposure depends on date, location, and shielding. | Show dated measurements and preserve Gy and Sv as separate units. |
+| **Regolith & Perchlorates** | Phoenix measured 0.4–0.6% perchlorate by mass in samples from its site. | Dust and soil chemistry matter for crew exposure. | Use local data for any route-level concentration. |
+| **Topography & Traversability** | Slopes, loose sand, scarps, and coarse obstacles can affect mobility. | Route limits depend on the traveler and equipment. | Derive slope from local elevation and review hazards in orbital and rover images. |
 | **Light & Vision** | Low atmospheric scatter produces harsh shadows and flat lighting in diffuse dust haze | Inability to judge subtle terrain depressions, cracks, and boulder obstacles. | High-contrast hillshade elevation overlays and visual odometry landmarks. |
 
 ---
@@ -43,12 +40,12 @@ To build an interplanetary map, data from distinct robotic missions is layered i
 │          • MRO CRISM (Hydrated Clays, Carbonates, Sulfates)            │
 │          • USGS Geologic Maps (Stratigraphy & Formation Ages)          │
 ├────────────────────────────────────────────────────────────────────────┤
-│ Layer 4: Space Weather & Atmospheric Telemetry                        │
-│          • MSL RAD (Cumulative mSv/day Surface Radiation)              │
-│          • Mars 2020 MEDA / MSL REMS (Surface Temp, Pressure, Dust Tau)│
+│ Layer 4: Historical Space Weather & Atmosphere                        │
+│          • Curiosity RAD surface radiation at the rover               │
+│          • Curiosity REMS at Gale or Perseverance MEDA at Jezero      │
 ├────────────────────────────────────────────────────────────────────────┤
-│ Layer 3: Thermophysical Stability & Soil Bearing Strength              │
-│          • 2001 Mars Odyssey THEMIS (Thermal Inertia: Bedrock vs Dust) │
+│ Layer 3: Surface Material Context                                     │
+│          • 2001 Mars Odyssey THEMIS (Apparent Thermal Inertia)         │
 ├────────────────────────────────────────────────────────────────────────┤
 │ Layer 2: Micro & Macro Topography / Slope Hazards                     │
 │          • MGS MOLA (463m Regional DEM & Elevation Profile)            │
@@ -83,7 +80,7 @@ The challenge prompt explicitly highlights five core NASA and USGS resources:
 5. **Mars Perseverance Raw Images Gallery:**  
    * **URL:** [https://mars.nasa.gov/mars2020/multimedia/raw-images/](https://mars.nasa.gov/mars2020/multimedia/raw-images/)  
    * **NASA Description:** Over 1 million images captured by the rover on its journey across the Mars surface.  
-   * **Project Integration:** Powers our ground-level Point-of-View (POV) feature, enabling astronauts to preview rover-ground images at waypoints.
+   * **Project Integration:** Provides Jezero surface views. The Gale demo uses Curiosity images at its own waypoints.
 
 ---
 
@@ -95,32 +92,28 @@ The challenge prompt explicitly highlights five core NASA and USGS resources:
 | **USGS Mars GIS** | USGS Astrogeology | Geologic Map Vector Layers | 1:5M to 1:24k | [USGS Interactive Maps](https://astrogeology-usgs.hub.arcgis.com/pages/interactive-maps-mars) | Standardized planetary geologic units and age classifications. |
 | **Mount Sharp Route** | NASA Science / MSL | Annotated Traversal Visual | Perspective | [Curiosity Route Visual](https://science.nasa.gov/resource/curiositys-proposed-path-up-mount-sharp/) | Benchmark for waypoint annotation and safe corridor plotting. |
 | **NASA Worldview** | NASA Earthdata | Multi-layer Satellite Engine | Dynamic | [NASA Worldview](https://worldview.earthdata.nasa.gov/) | Architectural reference for temporal scrubbing and layer toggling. |
-| **Perseverance Gallery** | Mars 2020 Rover | In-Situ Ground Camera Imagery | POV Images | [Perseverance Raw Images](https://mars.nasa.gov/mars2020/multimedia/raw-images/) | Ground-level photographic verification along traverse path. |
+| **Perseverance Gallery** | Mars 2020 Rover | Surface imagery | Rover camera frames | [Perseverance Raw Images](https://mars.nasa.gov/mars2020/multimedia/raw-images/) | Jezero context. Use Curiosity imagery for Gale. |
 | **MOLA** | Mars Global Surveyor | Laser Altimeter DEM | 463 m/px | [PDS MOLA Record](https://pds-geosciences.wustl.edu/missions/mgs/mola.html) | Global elevation basemap, large-scale slope profiles. |
 | **HiRISE** | Mars Reconnaissance Orbiter | Optical & Stereo DTM | 0.25 m/px optical, 1 m DTM | [HiRISE Ops Center](https://hirise.lpl.arizona.edu/) | Tactical boulder identification, crevasse avoidance, micro-slope mapping. |
 | **CTX** | Mars Reconnaissance Orbiter | Panchromatic Optical | 6.0 m/px | [Caltech Murray CTX Mosaic](https://murray-lab.caltech.edu/CTX/) | Comprehensive regional visual basemap covering >99% of Mars. |
-| **THEMIS** | 2001 Mars Odyssey | Thermal Infrared (9 bands) | 100 m/px | [ASU THEMIS Archive](https://themis.asu.edu/) | Thermal inertia mapping: distinguishes firm bedrock from hazardously deep dust. |
+| **THEMIS** | 2001 Mars Odyssey | Thermal infrared and apparent thermal inertia | About 100 m/px | [USGS thermal inertia mosaic](https://astrogeology.usgs.gov/search/map/mars-themis-derived-global-thermal-inertia-mosaic) | Context for interpreting surface materials. |
 | **CRISM** | Mars Reconnaissance Orbiter | Hyperspectral Imaging | 18–36 m/px | [JHU/APL CRISM](https://crism.jhuapl.edu/) | Mineralogical targets (clays, sulfates) for astronaut sampling. |
 | **REMS / MEDA** | Curiosity & Perseverance | Surface Weather Sensors | In-situ point telemetry | [PDS Atmospheres](https://pds-atmospheres.nmsu.edu/) | Ground truth for atmospheric density, diurnal temperatures, dust tau. |
-| **RAD** | Curiosity Rover | Energetic Particle Detector | In-situ point telemetry | [PDS Atmospheres MSL RAD](https://pds-atmospheres.nmsu.edu/) | Measures surface GCR and SPE solar flare radiation dosages. |
-| **RIMFAX** | Perseverance Rover | Ground-Penetrating Radar | Deep subsurface (0–10m) | [PDS Geosciences RIMFAX](https://pds-geosciences.wustl.edu/missions/mars2020/rimfax.htm) | Detects shallow subsurface rock layers, voids, and potential ice. |
+| **RAD** | Curiosity Rover | Energetic particle detector | In-situ point telemetry | [PDS RAD archive](https://pds-ppi.igpp.ucla.edu/mission/Mars_Science_Laboratory) | Historical radiation measurements at the rover. |
+| **RIMFAX** | Perseverance Rover | Ground-penetrating radar | Along the rover track | [PDS RIMFAX archive](https://pds-geosciences.wustl.edu/missions/mars2020/rimfax.htm) | Shallow subsurface stratigraphy at Jezero. |
 
 ---
 
 ## 4. Operational Marswalk (EVA) Simulation Scenario
 
-To validate the multi-layer map, a representative 6-hour Marswalk traverse can be modeled:
-* **Location:** Lower Mount Sharp, Gale Crater (or Western Jezero Crater Delta).
-* **Traverse Distance:** 2.5 km outbound, 2.5 km return (5.0 km total).
-* **Consumable Budget:**
-  * Oxygen store: 8 hours maximum nominal capacity.
-  * Point of No Return (PNR): Triggered when remaining consumable capacity reaches $120\%$ of return transit requirement.
-* **Traverse Path Rules:**
-  1. All segments maintain slope $<15^\circ$ to minimize suit cooling and metabolic strain.
-  2. Path avoids high-albedo, low-thermal-inertia ripple fields (deep soft dust) identified by THEMIS.
-  3. Boulders $>0.5\text{ m}$ visible in HiRISE are circumnavigated by at least 3 meters.
-  4. Scheduled stops at CRISM-identified clay/sulfate contact boundaries for sample extraction.
-  5. Constant line-of-sight communication relay maintained with the base habitat or pressurized exploration rover.
+The proposed demo is a simulated out-and-back walk at Bagnold Dunes, Gale Crater.
+
+1. Add a historical Curiosity reference line between High Dune and Namib Dune. Pin the documented observation and sampling locations.
+2. Compare a direct route with a detour around the Namib slip face. Derive the slope and elevation profile from the cropped USGS elevation model. Show gaps in terrain coverage.
+3. Add a science stop at the dune margin to compare ripple patterns and inspect Gobabeb mineralogy.
+4. Calculate a return margin from the modeled travel time and the first consumable to reach reserve. Set pace, slope limits, and reserves as simulation inputs.
+
+[Route evidence and workflow](challenge-data-audit.md#recommended-demonstration)
 
 ---
 
@@ -130,15 +123,15 @@ For detailed scientific derivations, see the full guide: [`research/martian-syst
 
 | System / Topic | Core NASA Finding | Mission / Instrument | Survival & Mission Integration |
 | :--- | :--- | :--- | :--- |
-| **Atmospheric Gas Pressures** | $95.32\%\text{ CO}_2$, $2.59\%\text{ N}_2$, $1.93\%\text{ Ar}$; mean $P \approx 6.1\text{ hPa}$ (Armstrong limit $\approx 63\text{ hPa}$) | Curiosity REMS, M2020 MEDA | Pressurized EVA suits mandatory ($20\text{--}30\text{ kPa}$); habitat requires $N_2/Ar$ concentration. |
-| **Wind & Katabatic Storms** | Nighttime katabatic slope winds reach $25\text{--}35\text{ m/s}$; low density reduces dynamic force but dust causes severe saltation wear | Curiosity REMS, M2020 MEDA | Abrasion-resistant visor coatings; avoiding steep crater rim descents during nocturnal wind peaks. |
-| **Diurnal Thermal Cycling** | Ground temps swing from $+20^\circ\text{C}$ midday to $-80^\circ\text{C}$ pre-dawn; $30^\circ\text{C}$ vertical boot-to-helmet gradient | Odyssey THEMIS, REMS | Active Liquid Cooling & Ventilation Garments (LCVG); heater-assisted electronics. |
-| **Seismology & Interior** | Over 1,318 marsquakes detected up to $M_w 4.7$; low seismic attenuation rings for 60–90 min; core radius $1,830\text{ km}$ | NASA InSight (SEIS instrument) | Habitat foundation stability; mapping underground lava tubes and subterranean cavern integrity. |
-| **Radiation & Space Weather** | GCR baseline $0.64\pm 0.12\text{ mSv/day}$; SPE flares $>1,000\text{ mSv}$; regolith neutron albedo | MSL RAD, MAVEN, NOAA SWPC | Automated space weather alerts ($12\text{--}36\text{ hr}$ lead time); abort to regolith/water storm shelters. |
-| **Hydrology & Subsurface Ice** | Massive glacial sheets (tens of meters thick) under $1\text{--}10\text{ m}$ regolith in Arcadia/Utopia; polyhydrated sulfates ($8\text{--}15\%\text{ H}_2\text{O}$) | MRO SHARAD Radar, Phoenix | Primary ISRU water extraction sites for drinking water and propellant synthesis. |
-| **ISRU Oxygen & Propellant** | MOXIE generates $6\text{--}12\text{ g/hr}$ pure $\text{O}_2$ via SOXE ($800^\circ\text{C}$); Sabatier reaction produces $\text{CH}_4$ fuel | Perseverance MOXIE | In-situ rocket fuel and oxygen generation, saving ~30 metric tons of Earth launch mass. |
-| **0.38g Gravity Adaptation** | $0.38\text{ g}$ gravity causes neurovestibular tilt-translation illusions for 48–72h; bone mineral loss $1\%/\text{mo}$; $200\text{ kg}$ suit inertia | NASA Human Research Program | Countermeasures for neurovestibular ataxia; managing high physical mass inertia on low-friction dust. |
-| **Sol Temporal Tracking & Isolation** | Martian Sol is $24\text{h }39\text{m }35\text{s}$; Earth communication delay $3.1\text{ to }22.3\text{ min}$ each way | Coordinated Mars Time (MTC) | Blue-enriched circadian lighting (460–480 nm); 100% autonomous onboard navigation system. |
+| **Atmospheric Gas Pressures** | SAM measures composition and REMS measures local pressure. | Curiosity SAM and REMS | Use local pressure and state the time basis of the gas fractions. |
+| **Wind** | The Namib daytime wind varied with dune position. | Curiosity REMS and MarsWRF | Use dated wind observations and show data gaps. |
+| **Diurnal Thermal Cycling** | Air and ground temperatures vary during the sol. | Odyssey THEMIS and Curiosity REMS | Use separate observed temperature series. |
+| **Seismology & Interior** | InSight recorded a historical seismic catalog from Elysium Planitia. | InSight SEIS | Use as regional science context. |
+| **Radiation & Space Weather** | RAD recorded the May 2024 event. MAVEN provides historical orbital particle data. | Curiosity RAD and MAVEN SEP | Show a dated replay and the source measurement units. |
+| **Hydrology & Subsurface Ice** | SWIM tracks orbital evidence for subsurface ice across broad regions. | SWIM and MRO SHARAD | Use as regional context for resource exploration. |
+| **ISRU Oxygen & Propellant** | MOXIE produced 122 g total oxygen and reached 12 g/h. | Perseverance MOXIE | Demonstrates a process for future oxygen production. |
+| **0.38g Gravity Adaptation** | Mars gravity is about 3.71 m/s². Sustained human outcomes remain uncertain. | NASA partial-gravity research | Model walking pace and fatigue as assumptions. |
+| **Sol Temporal Tracking & Isolation** | A mean sol is 24 h 39 min 35.244 s. Mars500 provides Earth-based isolation data. | NASA Mars24 and Mars500 | Show UTC, mission sol, and local Mars time where available. |
 
 ---
 

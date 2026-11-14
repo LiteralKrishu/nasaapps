@@ -1,6 +1,8 @@
 # Comprehensive Martian Systems Deep-Dive: Science, Planetary Data & Survival Engineering
 ## NASA Space Apps Challenge 2026: Interplanetary Survival Guide — Martian Map
 
+Use the [challenge data audit](challenge-data-audit.md) for the demo scope and source products.
+
 ---
 
 ## Table of Contents
@@ -23,8 +25,7 @@
 4. [Radiation Physics, Space Weather & Early Warning](#4-radiation-physics-space-weather--early-warning)
    * Galactic Cosmic Rays (GCR) & Curiosity RAD Baseline Data
    * Solar Particle Events (SPE) & Coronal Mass Ejections (CMEs)
-   * Secondary Radiation: Regolith Neutron Albedo
-   * Space Weather Alert Infrastructures (SWPC, SRAG, MAVEN, STEREO)
+   * Historical Mars solar particle events and alert modeling
 5. [Hydrological Systems & In-Situ Resource Utilization (ISRU)](#5-hydrological-systems--in-situ-resource-utilization-isru)
    * Subsurface Glacial Ice Deposits (SHARAD, MARSIS, Phoenix)
    * Hydrated Mineral Reservoirs (Sulfates & Phyllosilicates)
@@ -38,9 +39,8 @@
    * Ground-Level Point-of-View (POV) Image Correlation
 7. [Tactical Route Planning & Hazard Avoidance Algorithms](#7-tactical-route-planning--hazard-avoidance-algorithms)
    * Cost Surface Impedance Modeling
-   * Slope Thresholds & Regolith Repose Constraints
-   * Boulder Masking & Terrain Roughness Classification
-   * Point of No Return (PNR) & Consumable Budget Routing
+   * Slope, terrain hazards, and coverage
+   * Return margin and consumable budgets
 8. [Human Physiological, Life Support & Psychological Factors](#8-human-physiological-life-support--psychological-factors)
    * Closed-Loop Environmental Control & Life Support Systems (ECLSS)
    * Spacesuit Ergonomics & Metabolic Burn Rates
@@ -54,29 +54,7 @@
 ## 1. Atmospheric & Meteorological Systems
 
 ### 1.1 Atmospheric Composition & Gas Partial Pressures
-The Martian atmosphere is extraordinarily thin, tenuous, and cold, with a global mean surface pressure of approximately **$610\text{ Pa}$** ($6.10\text{ hPa}$ / $0.0885\text{ psi}$ / $0.00602\text{ atm}$), representing less than $1\%$ of Earth's sea-level pressure ($101,325\text{ Pa}$).
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   MARTIAN ATMOSPHERIC GAS INVENTORY                    │
-├─────────────────────────┬───────────────────┬──────────────────────────┤
-│ Gas Species             │ Volume Fraction   │ Partial Pressure (at 6.1 hPa)│
-├─────────────────────────┼───────────────────┼──────────────────────────┤
-│ Carbon Dioxide (CO₂)    │ 95.32%            │ 581.5 Pa                 │
-│ Nitrogen (N₂)           │ 2.59%             │ 15.8 Pa                  │
-│ Argon (Ar)              │ 1.93%             │ 11.8 Pa                  │
-│ Oxygen (O₂)             │ 0.16%             │ 0.98 Pa                  │
-│ Carbon Monoxide (CO)    │ 0.07%             │ 0.43 Pa                  │
-│ Water Vapor (H₂O)       │ ~0.03% (variable) │ ~0.18 Pa                 │
-│ Molecular Hydrogen (H₂) │ 0.0015% (15 ppm)  │ 0.009 Pa                 │
-│ Ozone (O₃)              │ 0.00001% (0.1 ppm)│ Trace                    │
-└─────────────────────────┴───────────────────┴──────────────────────────┘
-```
-
-#### Physiological Implications:
-* **The Armstrong Limit (~6.3 kPa / 63 hPa):** The pressure where the boiling point of pure water equals normal human body core temperature ($37.0^\circ\text{C} / 98.6^\circ\text{F}$). Because Martian surface pressure ($0.61\text{ kPa}$) is roughly a factor of ten *below* the Armstrong limit, exposed bodily fluids (saliva, tears, alveolar moisture in the lungs) flash into vapor instantly. 
-* **Partial Pressure of Oxygen:** Martian $P_{\text{O}_2} \approx 1\text{ Pa}$ compared to Earth's sea-level $P_{\text{O}_2} \approx 21.2\text{ kPa}$. Breathing ambient air causes irreversible hypoxic loss of consciousness within 10 to 15 seconds.
-* **Habitat Buffer Gas Need:** Martian nitrogen ($N_2$) and argon ($Ar$) must be gathered and compressed via life-support intake systems to establish a normoxic breathing mix ($70\text{--}80\% \text{ N}_2$, $20\text{--}30\% \text{ O}_2$) at total habitat pressure ($55\text{--}70\text{ kPa}$) to prevent barotrauma and flammability hazards.
+Mean Martian surface pressure is about 610 Pa. Pressure varies with location and season. The [Gale SAM results](https://doi.org/10.1029/2019JE006175) give annual mean volume fractions of 95.1% CO₂, 2.59% N₂, 1.94% ⁴⁰Ar, 0.161% O₂, and 0.058% CO. For a partial-pressure estimate, multiply the measured local total pressure by the gas volume fraction and state the time basis of each input.
 
 ### 1.2 Atmospheric Scale Height & Vertical Pressure Profiles
 Mars has an atmospheric scale height ($H$) of approximately **$11.1\text{ km}$**, compared to Earth's $8.5\text{ km}$. This occurs because Mars has significantly lower surface gravity ($g = 3.72\text{ m/s}^2$) which counteracts the lower atmospheric mean temperature ($T \approx 210\text{ K}$):
@@ -94,7 +72,7 @@ $$P(z) = P_0 \exp\left(-\frac{z}{H}\right)$$
 ### 1.3 Weather Patterns, Boundary Layer Dynamics & Katabatic Winds
 Martian weather is driven by intense solar heating of the low-density surface, radiative cooling, and massive topography:
 * **Planetary Boundary Layer (PBL):** Due to the low atmospheric density, the daytime convective boundary layer expands rapidly to heights of 6 to 10 km above the surface, collapsing to less than 100 meters at night under strong thermal inversion.
-* **Katabatic (Slope-Drainage) Winds:** In deep craters (Gale Crater, Jezero Crater) and vast canyons (Valles Marineris), rapid nighttime cooling of elevated rims causes dense, cold air to cascade down interior walls. Wind speeds can accelerate from gentle daytime breezes ($2\text{--}5\text{ m/s}$) to nocturnal downhill gusts exceeding **$25\text{ to }35\text{ m/s}$ ($90\text{ to }126\text{ km/h}$)**.
+* **Slope-drainage winds.** At the Namib lee site, the dune blocked northerly winds and daytime flow was primarily westerly during the sampled intervals. Keep the measurements and MarsWRF model outputs distinct. [Bagnold wind study](https://ntrs.nasa.gov/citations/20180000151)
 * **Dynamic Aerodynamic Pressure:** Because Martian atmospheric density is only $\approx 0.020\text{ kg/m}^3$ (compared to Earth's $1.225\text{ kg/m}^3$, a ratio of 1:60), the physical dynamic force exerted by wind ($q = \frac{1}{2} \rho v^2$) is vastly lower. A Martian gale of $30\text{ m/s}$ feels like a light breeze of $3.8\text{ m/s}$ ($14\text{ km/h}$) on Earth. However, high-velocity winds carry fine saltating sand particles that cause significant abrasive wear on suit visors, mechanical seals, and solar coatings.
 
 ### 1.4 Dust Storm Dynamics & Optical Depth ($\tau$)
@@ -110,7 +88,7 @@ Martian weather is driven by intense solar heating of the low-density surface, r
 Because of Mars' dry regolith, thin atmosphere, and low thermal inertia:
 * **Equatorial Diurnal Extremes:** Midday ground surface temperatures reach $+20^\circ\text{C}$ to $+25^\circ\text{C}$ ($293\text{--}298\text{ K}$), then drop precipitously post-sunset to $-80^\circ\text{C}$ to $-90^\circ\text{C}$ ($183\text{--}193\text{ K}$) right before dawn.
 * **Polar Winter Extremes:** Plunge to $-140^\circ\text{C}$ ($133\text{ K}$), freezing atmospheric $\text{CO}_2$ directly onto the ground.
-* **Extreme Vertical Thermal Gradient:** Air conducts heat very poorly at 6 hPa. At midday on the equator, an astronaut standing on the surface may experience **$+20^\circ\text{C}$ at their boot soles and $0^\circ\text{C}$ or $-10^\circ\text{C}$ at their helmet visor** (a $30^\circ\text{C}$ gradient over 2 meters).
+* **Air and ground temperature.** Plot both REMS temperature series separately. [Gale energy budget](https://doi.org/10.1029/2020JE006804)
 * **Engineering Impact:** Extreme thermal cycling causes thermal expansion fatigue in mechanical joints, cracks silicone spacesuit gaskets, degrades lithium-ion battery capacity by up to $60\%$ when unheated, and requires active closed-loop Liquid Cooling and Ventilation Garments (LCVG).
 
 ---
@@ -118,8 +96,7 @@ Because of Mars' dry regolith, thin atmosphere, and low thermal inertia:
 ## 2. Topographic, Geophysical & Seismic Systems
 
 ### 2.1 Planetary Topography & The MOLA Areoid Datum
-Mars has no ocean and thus no sea level. All topographic elevations are calculated relative to the **MOLA Areoid**:
-* **Definition:** The gravitational equipotential surface whose mean radius at the equator equals the mean radius of Mars ($R_{\text{ref}} = 3,396,000\text{ meters}$), defined by spherical harmonic gravity fields and laser altimetry from the Mars Global Surveyor MOLA instrument.
+* **MOLA reference.** The areoid is a gravitational equipotential surface with a mean equatorial radius of 3,396,000 m. The MOLA topography product subtracts the local areoid radius from the measured planetary radius. Check the vertical datum of every other product before comparing elevations. [MOLA product specification](https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/document/egdrsis.pdf)
 * **Total Global Elevation Range:** **$30.1\text{ kilometers}$**, spanning from $-8,200\text{ meters}$ in the impact basin of Hellas Planitia to $+21,900\text{ meters}$ at the volcanic peak of Olympus Mons.
 * **Crustal Dichotomy:** A global topographic and geological asymmetry between the ancient, heavily cratered Southern Highlands (1 to 3 km above datum) and the younger, flat, low-lying Northern Lowlands (3 to 5 km below datum).
 
@@ -128,20 +105,7 @@ Digital Elevation Models (DEMs) are derived from two primary NASA tiers:
 1. **Macro-Topography (MOLA MEGDR):** 128 pixels per degree ($\approx 463\text{ m/pixel}$ at equator). Suitable for regional route planning, macro-catchment modeling, and broad line-of-sight analysis.
 2. **Micro-Topography (HiRISE Stereo DTMs):** $1.0\text{ meter/pixel}$ horizontal grid spacing with relative vertical precision of $0.2\text{ to }0.3\text{ meters}$. Essential for tactical human traversal, resolving meter-scale boulders, small impact craters, and local slope steps.
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   TERRAIN SLOPE TRAVERSABILITY MATRIX                  │
-├──────────────┬──────────────────┬──────────────────────────────────────┤
-│ Slope Angle  │ Hazard Rating    │ Astronaut / Rover Operational Impact │
-├──────────────┼──────────────────┼──────────────────────────────────────┤
-│ 0° – 10°     │ SAFE (Green)     │ Nominal walking; low metabolic burn. │
-│ 10° – 15°    │ MODERATE (Yellow)│ Safe; increased EVA metabolic burn.  │
-│ 15° – 20°    │ CAUTION (Orange) │ Heavy suit joint fatigue; slip risk. │
-│ 20° – 25°    │ HIGH RISK (Brown)│ Extreme slip hazard; rover slip >40%.│
-│ > 25°        │ IMPASSABLE (Red) │ Exceeds regolith angle of repose;    │
-│              │                  │ triggers avalanches & rollovers.     │
-└──────────────┴──────────────────┴──────────────────────────────────────┘
-```
+Show slope in degrees. Set a simulation limit for the selected traveler and equipment. Interpret slope direction, loose surface material, and coverage before drawing a detour. Flag unmeasured terrain as unknown. [USGS terrain-model guidance](https://stac.astrogeology.usgs.gov/docs/data/mars/hirise_dtms/)
 
 ### 2.3 Planetary Geophysics & InSight Seismic Data (SEIS)
 NASA’s **InSight Lander** (Interior Exploration using Seismic Investigations, Geodesy and Heat Transport), operating on Elysium Planitia from 2018 to 2022, deployed the **SEIS (Seismic Experiment for Interior Structure)** seismometer to record the first comprehensive geophysical profile of Mars:
@@ -153,8 +117,8 @@ NASA’s **InSight Lander** (Interior Exploration using Seismic Investigations, 
 From InSight SEIS data:
 * **Crustal Thickness:** The crust is divided into two or three layers, with an average thickness of **$24\text{ to }72\text{ km}$** ($39\pm 8\text{ km}$ under the InSight landing site).
 * **Mantle:** Extends down to $\approx 1,560\text{ km}$, dominated by olivine and pyroxene with an enriched iron content relative to Earth.
-* **Core:** Liquid iron-nickel-sulfur core with a surprisingly large radius of **$1,830 \pm 40\text{ km}$**, indicating a lower core density enriched in light elements (sulfur, carbon, oxygen, and hydrogen).
-* **Operational Value for Surface Exploration:** Identifies subsurface stability for habitat anchoring, risks of fault-line ground shaking in tectonic rift zones, and helps map subterranean structures (lava tubes, buried ice sheets, collapse pits).
+* **Core.** An early estimate gave a radius of about 1,830 km. A later model with a molten silicate layer above the metal core estimated 1,675 ± 30 km. [InSight interior analysis](https://doi.org/10.1038/s41586-023-06586-4)
+* **Project use.** The single-station InSight catalog supports regional context. Foundation and subsurface assessment need local measurements. [Marsquake Service V14](https://www.insight.ethz.ch/en/seismicity/catalog/v14/)
 
 ---
 
@@ -196,55 +160,25 @@ Martian geologic history is categorized into three major chronological eras, map
 * **Triboelectric Charging:** The dry, low-pressure $\text{CO}_2$ atmosphere promotes severe triboelectric charging when dust particles rub against suit materials, tires, or other dust grains. Regolith carries strong static charges, adhering tenaciously to suit visors, camera optics, solar arrays, and suit cloth.
 
 ### 3.4 Toxic Soil Chemistry: Perchlorates ($\text{ClO}_4^-$) & Reactive Oxidants
-Discovered by the 2008 Phoenix Lander and verified globally by Curiosity and Perseverance:
-* **Concentration:** Calcium perchlorate ($\text{Ca}(\text{ClO}_4)_2$) and magnesium perchlorate ($\text{Mg}(\text{ClO}_4)_2$) constitute **$0.5\%\text{ to }1.0\%$ by weight** of all Martian surface soil.
-* **Endocrine Toxicity:** Perchlorate is a powerful competitive inhibitor of the sodium-iodide symporter ($NIS$) in the human thyroid gland. Inhaling or ingesting minute quantities disrupts thyroid hormone production ($T_3/T_4$), damages metabolism, and can cause aplastic anemia and bone marrow suppression.
-* **Reactive Oxygen Species (ROS):** Solar UV radiation striking perchlorates and iron oxides generates hazardous hypochlorites, superoxide radicals, and hydrogen peroxide ($H_2O_2$) in the regolith, making topsoil corrosive to human lung tissue.
-* **Operational Requirement:** Absolute barrier airlocks with electrostatic dust removal, liquid rinse stages, and suitports (where the spacesuit docks to the exterior of the habitat and the astronaut climbs directly into the suit from behind without bringing suit dust indoors) are mandatory.
+The Phoenix Wet Chemistry Laboratory measured 0.4–0.6% perchlorate by mass in sampled soils. Soil chemistry varies by site. Use local measurements for any mapped concentration. [Phoenix soil analysis](https://doi.org/10.1126/science.1172466)
 
 ---
 
 ## 4. Radiation Physics, Space Weather & Early Warning
 
-Mars lacks an intrinsic dipolar magnetic field and possesses a column atmospheric mass of only $\approx 15\text{ g/cm}^2$ (compared to Earth's $1,033\text{ g/cm}^2$). Consequently, high-energy cosmic radiation strikes the Martian surface almost unhindered.
+Curiosity measures the surface radiation environment at its location. The early Gale interval gave a GCR-dominated dose equivalent rate of 0.64 ± 0.12 mSv/day. A later solar-minimum study measured 0.721 ± 0.042 mSv/day. The difference depends on solar activity and atmospheric conditions. [Early RAD results](https://doi.org/10.1126/science.1244797) · [Solar-minimum analysis](https://www.sciencedirect.com/science/article/am/pii/S0019103522001488)
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   MARTIAN IONIZING RADIATION SOURCES                   │
-├───────────────────────┬────────────────────────┬───────────────────────┤
-│ Radiation Type        │ Galactic Cosmic Rays   │ Solar Particle Events │
-│                       │ (GCR)                  │ (SPE / CMEs)          │
-├───────────────────────┼────────────────────────┼───────────────────────┤
-│ Origin                │ Outside Solar System   │ Solar Coronal Flares  │
-│ Composition           │ 85% Protons, 14% He,   │ >95% Protons, low Z   │
-│                       │ 1% HZE Heavy Ions (Fe) │                       │
-│ Flux Temporal Nature  │ Continuous, steady     │ Sporadic, acute burst │
-│ Energy Spectrum       │ Ultra-high (GeV range) │ Moderate (10-500 MeV) │
-│ Daily Dose Rate       │ ~0.64 ± 0.12 mSv/day   │ Up to >1,000 mSv/hr   │
-│ Shielding Difficulty  │ Extremely difficult;   │ Manageable with mass  │
-│                       │ creates secondary ions │ (water, regolith berm)│
-│ Primary Health Risk   │ Chronic carcinogenesis,│ Acute Radiation       │
-│                       │ CNS degeneration       │ Sickness (ARS), death │
-└───────────────────────┴────────────────────────┴───────────────────────┘
-```
+### 4.1 Galactic cosmic rays and Curiosity RAD
 
-### 4.1 Galactic Cosmic Rays (GCR) & Curiosity RAD Telemetry
-The **Radiation Assessment Detector (RAD)** aboard MSL Curiosity has collected continuous, in-situ surface radiation measurements since landing in Gale Crater in August 2012:
-* **Average Surface Dose Rate:** **$0.64 \pm 0.12\text{ mSv/day}$** ($\approx 230\text{ mSv/year}$).
-* **Comparison:** Normal Earth background radiation is $\approx 2.4\text{ to }3.0\text{ mSv/year}$. A 500-day surface stay on Mars exposes an astronaut to $\approx 320\text{ mSv}$, which approaches the career radiation limits established by NASA for astronauts ($600\text{ mSv}$ lifetime limit for a $3\%$ excess risk of cancer mortality).
-* **Solar Cycle Modulation:** During solar maximum, the enhanced interplanetary magnetic field carried by the solar wind deflects incoming GCRs, reducing surface GCR dose rates by $\approx 25\text{--}30\%$. During solar minimum, GCR flux increases to its maximum.
+Galactic cosmic rays contribute a persistent background. For a comparison, keep the dose quantity, units, detector, and interval with each record. [PDS RAD archive](https://pds-ppi.igpp.ucla.edu/mission/Mars_Science_Laboratory)
 
-### 4.2 Solar Particle Events (SPE) & Coronal Mass Ejections (CMEs)
-* **Mechanisms:** Giant magnetic reconnection events on the Sun unleash Coronal Mass Ejections (CMEs), hurling high-flux beams of relativistic protons ($10\text{ to }>100\text{ MeV}$) into interplanetary space.
-* **Lethal Risk:** A major event (such as the Carrington Event of 1859 or the August 1972 solar event) could deliver an acute whole-body dose exceeding **$1.0\text{ to }3.0\text{ Gray (1,000 to 3,000 mSv)}$** to an unshielded astronaut on the Martian surface, causing Acute Radiation Sickness (ARS), severe gastrointestinal failure, and fatal hematopoietic syndrome.
-* **Secondary Radiation (Regolith Neutron Albedo):** High-energy protons colliding with heavier atoms (silicon, iron, aluminum) in the Martian regolith trigger spallation reactions, bouncing secondary fast and thermal neutrons back up toward surface explorers. Spacesuit design must avoid materials that generate high secondary neutron flux.
+### 4.2 Solar particle events
 
-### 4.3 Space Weather Alert Infrastructures
-To protect surface explorers during EVAs, our Martian Map must integrate automated space weather warning feeds:
-* **NOAA Space Weather Prediction Center (SWPC) & NASA Space Radiation Analysis Group (SRAG):** Monitors solar flare activity, proton flux detectors ($GOES$, $ACE$, $DSCOVR$).
-* **Mars-Orbiting Sentinels:** Spacecraft such as NASA’s **MAVEN** (Mars Atmosphere and Volatile Evolution) and ESA’s **Trace Gas Orbiter (TGO)** carry magnetometers and energetic particle spectrometers orbiting Mars.
-* **Transit Warning Latency:** While high-energy photons (X-rays) arrive at Mars in $\approx 8\text{ to }22\text{ minutes}$ (at speed of light), the energetic proton storm and shockwave travel at $1,000\text{ to }2,500\text{ km/s}$, providing an operational warning window of **$12\text{ to }36\text{ hours}$** before the peak particle flux strikes. 
-* **Tactical Protocol:** Immediate abort of ongoing Marswalks; crew retreats into the habitat storm shelter (surrounded by water walls or $>1\text{ meter}$ of compacted regolith) or into natural topographical shields (deep canyon walls or lava tube skylights).
+JPL reported 8,100 µGy absorbed dose for the 20 May 2024 event at Curiosity. A human dose estimate needs a radiation quality and shielding model. Store absorbed dose in Gy and dose equivalent in Sv. [JPL event report](https://www.jpl.nasa.gov/news/nasa-watches-mars-light-up-during-epic-solar-storm/)
+
+### 4.3 Space weather alerts
+
+Use the May 2024 event as a dated replay. NASA declared MAVEN’s mission ended on 3 June 2026. Its archive provides historical orbital observations. NOAA GOES measurements describe near-Earth conditions. A Mars prediction needs a Mars-specific model and its uncertainty. [NASA MAVEN status](https://science.nasa.gov/mission/maven/) · [NASA SEPSTER3D model](https://ccmc.gsfc.nasa.gov/models/SEPSTER3D~0.1/) · [Event replay data](https://doi.org/10.5281/zenodo.14801849)
 
 ---
 
@@ -267,13 +201,13 @@ Narrow (0.5 to 5 m wide), dark streaks that incrementally form and flow downslop
 * **Planetary Protection:** Designated as potential "Special Regions" under COSPAR planetary protection guidelines to prevent biological contamination by human microflora.
 
 ### 5.4 ISRU Oxygen Extraction: MOXIE Solid Oxide Electrolysis (SOXE)
-NASA’s **MOXIE** (Mars Oxygen ISRU Experiment), operating inside the Perseverance rover on Jezero Crater, has demonstrated continuous production of high-purity breathable oxygen from the Martian air:
+NASA’s MOXIE experiment on Perseverance demonstrated oxygen production from the Martian atmosphere at Jezero Crater.
 * **Thermodynamic Reaction:**
 
 $$2\text{CO}_2 \xrightarrow{\Delta H, 800^\circ\text{C}} 2\text{CO} + \text{O}_2$$
 
 * **Mechanism:** Air is drawn from the Martian atmosphere, compressed from $6\text{ hPa}$ to $1\text{ atm}$, heated to $800^\circ\text{C}$, and directed across Solid Oxide Electrolyzer cells (scandia-stabilized zirconia, YSZ). Oxygen ions ($\text{O}^{2-}$) diffuse through the ceramic electrolyte and recombine into pure molecular $\text{O}_2$ gas at the anode.
-* **Operational Results:** MOXIE operated across all seasons, day and night, producing **$6\text{ to }12\text{ grams of pure } \text{O}_2\text{ per hour}$** with $>98\%$ purity, proving that human-scale ISRU plants can generate the $\sim 25\text{ to }30\text{ metric tons of liquid }\text{O}_2$ needed to launch astronauts back into Mars orbit.
+* **Results.** MOXIE produced 122 g of oxygen across 16 runs. The peak rate was 12 g/h at 98% purity or better. A crew-scale system would need separate design and testing. [JPL experiment results](https://www.jpl.nasa.gov/news/nasas-oxygen-generating-experiment-moxie-completes-mars-mission/)
 
 ### 5.5 ISRU Fuel & Propellant Synthesis: The Sabatier Reaction
 Liquid methane ($\text{CH}_4$) combined with liquid oxygen ($\text{LOX}$) is the premier propellant combination for Mars Ascent Vehicles (MAV):
@@ -295,7 +229,7 @@ $$\text{CO}_2 + 4\text{H}_2 \xrightarrow{\text{Ru-Al}_2\text{O}_3, 400^\circ\tex
 * **Coordinate Standards:** East-positive planetocentric longitudes ($0^\circ\text{ to }360^\circ$ East), measured from the Martian Prime Meridian passing through the small crater **Airy-0** inside the larger crater Airy in Sinus Meridiani.
 * **Projections:**
   * Global/Equatorial: Equirectangular (Plate Carrée) and Mercator.
-  * Local Traversal Zones: Universal Transverse Mercator (UTM) or Lambert Conformal Conic.
+  * Local traversal zones use a metric Mars projection with the appropriate planetary radii and coordinate convention.
   * Polar Mapping: Polar Stereographic.
 
 ### 6.2 Multi-Layer Sensor Fusion Schema
@@ -326,45 +260,26 @@ To create a truly operational map for surface survival, our architecture layers 
 ## 7. Tactical Route Planning & Hazard Avoidance Algorithms
 
 ### 7.1 Cost Surface Impedance Modeling
-Finding the optimal EVA path between Habitat Alpha and Scientific Sampling Station Omega requires constructing a 2D cost grid where each cell's traversal cost $C_{i,j}$ is mathematically evaluated:
+Build the route cost from segment length, uphill and cross-slope, and explicitly mapped terrain hazards. Use dated images to trace mobile sand. Use THEMIS apparent thermal inertia as context for surface materials. Keep missing or low-quality terrain visible. Use radiation and weather point records for dated context, with a separate model if the demo estimates conditions between measurements. [Bagnold Dunes data and route checks](challenge-data-audit.md#checks-before-using-the-data-in-the-prototype)
 
-$$C_{i,j} = w_{\text{slope}} \cdot S(\theta) + w_{\text{rough}} \cdot R + w_{\text{inertia}} \cdot \left(\frac{1}{TI}\right) + w_{\text{rad}} \cdot \dot{D} + w_{\text{dist}} \cdot D$$
-
-Where:
-* $S(\theta) = \tan^2(\theta)$: Exponential penalty function for terrain slope angle $\theta$.
-* $R$: Terrain roughness and boulder count per unit area (derived from HiRISE $0.25\text{ m/px}$).
-* $TI$: Thermal Inertia (from THEMIS); low $TI$ ($<150\text{ J}\cdot\text{m}^{-2}\cdot\text{K}^{-1}\cdot\text{s}^{-1/2}$) represents soft, uncompacted dust where astronauts slip and rovers get bogged down.
-* $\dot{D}$: Real-time ionizing radiation dose rate and topographical shadow exposure.
-* $w_x$: Weighting multipliers tuned for either on-foot EVA or pressurized rover traverse.
-
-### 7.2 Path Optimization & The Point of No Return (PNR)
-* **A\* / Dijkstra Graph Traversal:** Calculates the minimum energy path across the impedance raster.
-* **Point of No Return (PNR) Calculation:** During an EVA, astronauts carry a finite consumables budget (oxygen, battery power, cooling water). The system maintains an active return-to-habitat vector:
-
-$$t_{\text{remaining}} \ge 1.25 \times t_{\text{return\_transit}}(x, y)$$
-
-A safety buffer of $25\%$ is hard-coded to account for fatigue, slips, or rover drive system degradation. If $t_{\text{remaining}}$ drops to the $1.25\times$ threshold, an immediate **EVA ABORT & RETURN** order is issued.
+### 7.2 Route comparison and return margin
+Compare the direct route with a modeled detour. Use a declared walking speed and stop times. For each consumable, compare the remaining amount with its modeled return need plus reserve. Show the first resource that reaches its reserve. Record the reserve as a configurable scenario input.
 
 ---
 
 ## 8. Human Physiological, Life Support & Psychological Factors
 
 ### 8.1 Closed-Loop Environmental Control & Life Support (ECLSS)
-During an Extravehicular Activity, spacesuits function as miniature, personalized spacecraft:
-* **Oxygen Consumption:** Nominal metabolic consumption is **$0.84\text{ kg of }\text{O}_2\text{ per day}$** ($35\text{ g/hour}$ at rest), rising to **$80\text{ to }120\text{ g/hour}$** during heavy physical EVA exertion (climbing slopes, carrying core samples).
-* **Carbon Dioxide Removal:** A human produces $\approx 1.0\text{ kg of }\text{CO}_2\text{ per day}$. The Portable Life Support System (PLSS) must continuously scrub $\text{CO}_2$ using regenerable metal-oxide (MetOx) canisters or amine-based solid sorbent vacuum-desorbing beds (Amine Swingbeds) to maintain suit $P_{\text{CO}_2} < 400\text{ Pa}$ ($3.0\text{ mmHg}$) and prevent hypercapnia.
-* **Metabolic Heat Rejection:** Heavy physical exertion generates $200\text{ to }500\text{ Watts}$ of metabolic waste heat. Sublimation boilers (used on Apollo lunar suits) struggle in Mars’ $6\text{ hPa}$ atmosphere because atmospheric pressure exceeds the triple point of pure water under certain dynamic shock conditions. Mars suits utilize **Membrane Evaporators (Spacesuit Water Membrane Evaporator - SWME)** or phase-change wax heat exchangers.
+Use oxygen storage, carbon dioxide removal, battery energy, cooling water and reserve as separate suit inputs. NASA’s baseline values provide context for the input assumptions. ISS hardware demonstrated 98% water recovery with brine processing. Use the ISS figure as habitat life-support context. [NASA life-support baseline values](https://ntrs.nasa.gov/citations/20210024855) · [ISS test](https://www.nasa.gov/missions/station/nasa-achieves-water-recovery-milestone-on-international-space-station/)
 
 ### 8.2 Gravitational Adaptation to 0.38g
-Human physiology adapted for terrestrial $1.0\text{ g}$ experiences significant neurovestibular and musculoskeletal remodeling in Martian $0.38\text{ g}$:
-* **Neurovestibular Readaptation:** Otolith organs in the inner ear misread gravitational tilt for linear acceleration, causing space motion sickness, ataxia, and loss of postural equilibrium during the first 48 to 72 hours on the surface.
-* **Musculoskeletal Atrophy:** Without countermeasures, astronauts lose up to $1.0\%\text{ to }1.5\%$ of bone mineral density per month in cancellous bone (femoral head, lumbar vertebrae) and experience calf muscle mass reduction. Daily resistance exercise and dietary bisphosphonates are mandatory.
-* **Suit Mass Inertia Disparity:** While an astronaut weighing $80\text{ kg}$ in a $120\text{ kg}$ suit ($200\text{ kg}$ total) weighs only $76\text{ kg-force}$ ($745\text{ N}$) on Mars, the system retains all **$200\text{ kg}$ of physical mass inertia**. Astronauts report easily tripping when running because momentum cannot be arrested quickly by the low friction of light body weight on loose dust.
+
+Mars surface gravity is about 3.71 m/s². A traveler and suit retain their mass and inertia in the lower gravity. Sustained human adaptation at 0.38 g remains uncertain. Treat pace, stability and fatigue as simulation assumptions. [Mars facts](https://www.jpl.nasa.gov/news/press_kits/insight/landing/facts/mars-at-a-glance/) · [NASA partial-gravity research](https://ntrs.nasa.gov/citations/20205010170)
 
 ### 8.3 Temporal Systems: Sol Tracking & Circadian Desynchronization
 * **The Martian Sol:** Measures **24 hours, 39 minutes, 35.244 seconds** (39.5 minutes longer than an Earth solar day).
 * **Circadian Clock Drift:** While humans can adjust to a 24.65-hour circadian cycle, the human suprachiasmatic nucleus (SCN) requires precise environmental synchronization cues. Without dynamic high-lux blue-enriched lighting (460–480 nm) in the morning and red lighting before sleep, crew members suffer cumulative sleep latency, insomnia, and cognitive degradation.
-* **Tactical System Sol Clock:** All mission navigation software, waypoints, and telemetry must be indexed to **Mars Sol Date (MSD)** and **Coordinated Mars Time (MTC)** rather than Earth UTC.
+* **Timestamps.** Preserve UTC and mission sol. Label local mean or true solar time and retain the convention used by the source. [NASA Mars24 technical notes](https://www.giss.nasa.gov/tools/mars24/help/notes.html)
 
 ### 8.4 Psychological Isolation & Communication Latency Management
 * **Latency Dynamic:** The orbital geometry between Earth and Mars dictates a one-way radio propagation delay ranging from **$3.1\text{ minutes}$** (at closest perihelic opposition, ~56 million km) to **$22.3\text{ minutes}$** (at superior conjunction, ~401 million km).
