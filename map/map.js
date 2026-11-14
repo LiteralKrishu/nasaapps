@@ -61,6 +61,7 @@ function drawMap() {
   svg("path", { d: linePath(survey.history), fill: "none", stroke: color.history, "stroke-width": 1.7,
     "stroke-dasharray": "2 3", "vector-effect": "non-scaling-stroke" }, track);
 
+  layer("dan", { display: "none" });
   const routes = layer("routes", { fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" });
   for (const name of ["direct", "detour"]) {
     const route = survey.routes[name];
@@ -229,7 +230,7 @@ map.addEventListener("keydown", event => {
 });
 
 map.addEventListener("pointerdown", event => {
-  if (event.button !== 0 || view.zoom === 1) return;
+  if (event.button !== 0 || view.zoom === 1 || event.target.closest(".dan-marker")) return;
   drag = { screenX: event.clientX, screenY: event.clientY, x: view.x, y: view.y };
   map.setPointerCapture(event.pointerId);
   map.classList.add("is-panning");

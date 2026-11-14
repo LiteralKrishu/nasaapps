@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ## Bagnold Dunes Marswalk planner
 
-Open [the Marswalk planner](map/index.html) in a browser. Compare routes and elevation profiles, check your return-to-base budget, explore Gobabeb and Curiosity weather, or replay the May 2024 solar storm. The planner works offline with the bundled files. [Data and methods](map/README.md)
+Open [the Marswalk planner](map/index.html) in a browser. Compare routes and elevation profiles, check your return-to-base budget, and explore Gobabeb, Curiosity weather, and the May 2024 solar storm. The [water and ISRU panel](map/index.html#water) pairs Curiosity’s hydrogen estimates near Namib with orbital ice evidence around Gale Crater and links to the regional ice and MOXIE view. The planner works offline with the bundled files. [Data and methods](map/README.md)
 
 ---
 

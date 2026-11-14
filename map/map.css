@@ -254,3 +254,101 @@ select:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); 
 .storm-chart { display: block; width: 100%; height: 167px; }
 .storm-data { border-block: 1px solid var(--line); padding-block: 10px; margin-bottom: 12px; }
 .storm-data summary { font-size: 14px; cursor: pointer; }
+
+.swatch.dan { background: var(--history); border-radius: 50%; width: 8px; }
+.dan-marker { cursor: pointer; fill: var(--history); stroke: var(--bg); stroke-width: 1px; }
+.dan-passive { fill-opacity: .72; }
+.dan-selected { fill: var(--accent); stroke: var(--ink); stroke-width: 2px; }
+.water-evidence { display: grid; grid-template-columns: 5fr 6fr; gap: clamp(18px, 4vw, 46px); }
+.water-evidence[hidden] { display: none; }
+.water-source { min-width: 0; border-top: 1px solid var(--line); padding-top: 15px; }
+.water-source h3, .water-planning h3 { font-size: 16px; margin: 0 0 7px; }
+.water-readings { margin: 16px 0; }
+#dan-gobabeb, .water-score { color: var(--history); }
+.water-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 12px 0; }
+.water-actions button { min-height: 36px; font-size: 13px; }
+.water-source label { display: block; font-size: 13px; margin-bottom: 5px; }
+.water-source select { max-width: 100%; }
+.water-figure { margin: 12px 0 0; }
+.water-map { position: relative; border: 1px solid var(--line); }
+.water-map img { display: block; width: 100%; height: auto; aspect-ratio: 61 / 49; image-rendering: pixelated; }
+.water-site {
+  position: absolute; width: 9px; height: 9px; transform: translate(-50%, -50%);
+  border: 2px solid var(--ink); box-shadow: 0 0 0 1px var(--bg); border-radius: 50%;
+}
+.water-site span {
+  position: absolute; top: -7px; left: 11px; color: var(--ink); background: var(--bg);
+  padding: 2px 4px; font: 11px "IBM Plex Mono", monospace;
+}
+.water-key { display: flex; flex-wrap: wrap; gap: 6px 15px; margin-top: 6px; color: var(--muted); font-size: 11px; }
+.water-key i { display: inline-block; width: 24px; height: 8px; margin-right: 5px; }
+.swim-scale { background: linear-gradient(90deg, #b86d47, #303430, #9bd9e0); }
+.swim-nodata { background: repeating-conic-gradient(#717171 0% 25%, #484848 0% 50%) 0 / 8px 8px; }
+.water-score { font: 13px "IBM Plex Mono", monospace; }
+.water-planning { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 14px; font-size: 13px; }
+@media (max-width: 700px) {
+  .water-evidence { grid-template-columns: 1fr; }
+}
+
+.resource-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; }
+.resource-controls button { min-width: 64px; min-height: 36px; }
+.swim-map-frame { position: relative; background: var(--bg); border: 1px solid var(--line); }
+.swim-map-frame img { display: block; width: 100%; height: auto; aspect-ratio: 3; }
+#swim-markers { position: absolute; inset: 0; pointer-events: none; }
+#swim-markers button {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+}
+#swim-markers button::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--bg);
+}
+#swim-markers button[aria-pressed="true"]::after { background: var(--accent); border-color: var(--bg); box-shadow: 0 0 0 1px var(--accent); }
+.swim-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 16px;
+  padding: 0;
+  margin: 11px 0 15px;
+  list-style: none;
+  color: var(--muted);
+  font-size: 12px;
+}
+.swim-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.swim-legend li > span:first-child { width: 17px; height: 9px; border: 1px solid var(--line); }
+.swim-below { background: #666058; }
+.swim-strong { background: linear-gradient(90deg, #3a7198, #8fe9f7); }
+.swim-missing { background: repeating-linear-gradient(45deg, #191917 0 3px, #2e2d2b 3px 4px); }
+.swim-inspect { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-bottom: 17px; }
+.swim-inspect label, .swim-inspect select { display: block; }
+.swim-inspect label, .swim-readout span { font-size: 13px; }
+.swim-inspect select { margin-top: 5px; max-width: 100%; }
+.swim-inspect p { margin: 4px 0 0; }
+.swim-readout { background: var(--bg); border-left: 3px solid var(--history); padding: 10px 13px; }
+.swim-readout strong, .swim-readout span { display: block; }
+.swim-readout strong { color: var(--history); font-variant-numeric: tabular-nums; }
+.swim-readout span { color: var(--muted); margin-top: 5px; }
+.swim-table { min-width: 550px; }
+.swim-selected-row { background: var(--bg); }
+.moxie-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: clamp(14px, 4vw, 35px); border-top: 1px solid var(--line); margin-top: 25px; padding-top: 24px; }
+.moxie-panel h3 { margin: 0; }
+.moxie-panel p { color: var(--muted); line-height: 1.5; }
+.moxie-readings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 690px) {
+  .moxie-panel, .swim-inspect { grid-template-columns: 1fr; }
+  .moxie-panel figure { order: 2; margin: 0; }
+}
