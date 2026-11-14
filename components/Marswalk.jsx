@@ -9,6 +9,8 @@ import ReturnPlanner from "./ReturnPlanner";
 import GobabebSection from "./GobabebSection";
 import WaterSection from "./WaterSection";
 import LazySection from "./LazySection";
+import Hero from "./Hero";
+import SectionNav from "./SectionNav";
 
 // Heavy, data-rich sections load their code and data only when needed.
 const placeholder = id => function Loading() {
@@ -22,11 +24,12 @@ const QuakeSection = dynamic(() => import("./QuakeSection"), { ssr: false, loadi
 const NAV = [
   ["traverse", "Traverse"],
   ["return", "Return to base"],
+  ["readiness", "Go / no-go"],
   ["gobabeb", "Gobabeb science"],
-  ["weather", "Curiosity weather"],
-  ["solar-storm", "Radiation & space weather"],
+  ["weather", "Weather"],
+  ["solar-storm", "Radiation"],
   ["water", "Water & ISRU"],
-  ["resource-exploration", "Regional ice & MOXIE"],
+  ["resource-exploration", "Ice & MOXIE"],
   ["marsquakes", "Marsquakes"],
 ];
 
@@ -57,29 +60,28 @@ export default function Marswalk() {
   }, []);
 
   return (
-    <main>
-      <header className="masthead">
-        <div>
-          <p className="location">MARTIAN MAP <span></span> GALE CRATER</p>
-          <h1>Namib Dune</h1>
-          <p className="subtitle">Bagnold Dunes · A Marswalk around the slip face</p>
-        </div>
-        <div className="status">Marswalk planner</div>
-      </header>
-      <nav className="section-nav" aria-label="Planner sections">
-        {NAV.map(([id, label]) => <a key={id} href={`#${id}`}>{label}</a>)}
-      </nav>
+    <main id="top">
+      <Hero />
+      <SectionNav items={NAV} />
 
-      <TraverseSection
-        mapRef={mapRef}
-        routeName={routeName}
-        onRouteChange={setRouteName}
-        layers={layers}
-        onLayerChange={setLayer}
-        danAvailable={danAvailable}
-        selectedDanId={selectedDanId}
-        onSelectDan={setSelectedDanId}
-      />
+      <section className="traverse-panel" id="traverse" aria-labelledby="traverse-title">
+        <div className="detail-heading">
+          <div>
+            <h2 id="traverse-title">Choose a route</h2>
+            <p>Compare the Namib detour with the direct line across HiRISE imagery, slope, contours and the dune exclusion zone.</p>
+          </div>
+        </div>
+        <TraverseSection
+          mapRef={mapRef}
+          routeName={routeName}
+          onRouteChange={setRouteName}
+          layers={layers}
+          onLayerChange={setLayer}
+          danAvailable={danAvailable}
+          selectedDanId={selectedDanId}
+          onSelectDan={setSelectedDanId}
+        />
+      </section>
       <ReturnPlanner routeName={routeName} inputs={plannerInputs} onInputsChange={setPlannerInputs} />
       <GobabebSection onShowSamplingWeather={showSamplingWeather} />
       <LazySection id="weather">
@@ -90,10 +92,16 @@ export default function Marswalk() {
       <LazySection id="resource-exploration"><ResourcesSection /></LazySection>
       <LazySection id="marsquakes"><QuakeSection /></LazySection>
 
-      <footer>
-        <p>Terrain and imagery by USGS Astrogeology, NASA, JPL-Caltech, and the University of Arizona. Rover track from NASA PDS PLACES. Surface photo by NASA/JPL-Caltech.</p>
-        <a href="/data/profile.csv" download>Download elevation data</a>
-        <a href="https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m">USGS source ↗</a>
+      <footer className="site-footer">
+        <div>
+          <p className="footer-title">Marswalk planner · NASA Space Apps Challenge 2026</p>
+          <p>Terrain and imagery by USGS Astrogeology, NASA, JPL-Caltech, and the University of Arizona. Rover track from NASA PDS PLACES. Weather from Curiosity REMS, radiation from Curiosity RAD and MAVEN SEP, water evidence from Curiosity DAN and SWIM, seismic events from InSight. Surface photos by NASA/JPL-Caltech.</p>
+        </div>
+        <div className="data-links">
+          <a href="/data/profile.csv" download>Download elevation data</a>
+          <a href="https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m">USGS terrain source ↗</a>
+          <a href="#top">Back to top ↑</a>
+        </div>
       </footer>
     </main>
   );

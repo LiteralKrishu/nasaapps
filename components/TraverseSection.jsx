@@ -136,7 +136,7 @@ export default function TraverseSection({
     : `Crosses ${Math.round(route.hazardDistance)} m of the dune exclusion zone. Shown for comparison.`;
 
   return (
-    <div className="layout" id="traverse">
+    <div className="layout">
       <section className="survey" aria-label="Marswalk map and elevation profile">
         <div className="toolbar">
           <h2>Traverse map</h2>
