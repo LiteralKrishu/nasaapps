@@ -5,9 +5,21 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ## Bagnold Dunes Marswalk planner
 
-Open [the Marswalk planner](map/index.html) in a browser. Compare routes and elevation profiles, check your return-to-base budget, and explore Gobabeb, Curiosity weather, and the May 2024 solar storm. The [water and ISRU panel](map/index.html#water) pairs Curiosity’s hydrogen estimates near Namib with orbital ice evidence around Gale Crater and links to the regional ice and MOXIE view. The planner works offline with the bundled files. [Data and methods](map/README.md)
+Open [the Marswalk planner](map/index.html) in a browser. Compare routes and elevation profiles, check your return-to-base budget, and explore Gobabeb, Curiosity weather, and the May 2024 solar storm. The [water and ISRU panel](map/index.html#water) pairs Curiosity’s hydrogen estimates near Namib with orbital ice evidence around Gale Crater and links to the regional ice and MOXIE view. The [marsquake view](map/index.html#marsquakes) links a global map and timeline to NASA’s InSight seismic catalog. The planner works offline with the bundled files. [Data and methods](map/README.md)
 
 ---
+
+## Planner features
+
+- [Traverse map and elevation profile](map/index.html#traverse). Toggle HiRISE imagery, contours, slope, dune exclusion, the rover track, and DAN samples. Compare the Namib detour with the direct route.
+- [Return-to-base planner](map/index.html#return). Set walking pace and stop time. Check oxygen, carbon dioxide removal, battery, and cooling-water reserves.
+- [Gobabeb science stop](map/index.html#gobabeb). Explore Curiosity imagery, sample chemistry and mineralogy, grain sizes, and the thermal behavior of dune sand.
+- [Curiosity weather timeline](map/index.html#weather). Browse air and ground temperature, pressure, and available wind across both Bagnold campaign phases.
+- [May 2024 solar storm replay](map/index.html#solar-storm). Compare Curiosity RAD surface dose rates with the pre-storm background and MAVEN’s orbital ion flux on a shared timeline.
+- [Water and ISRU](map/index.html#water). Inspect DAN hydrogen estimates and NASA SWIM ice evidence by depth. The [regional resource view](map/index.html#resource-exploration) compares Mars sites and shows Perseverance’s MOXIE oxygen results.
+- [Marsquakes](map/index.html#marsquakes). Filter InSight events by year and location evidence. Inspect epicenters, confirmed impacts, magnitude and distance uncertainty, and what the catalog can tell us about Gale.
+
+The planner and its data downloads work offline. [Data and methods](map/README.md)
 
 ## 📌 Challenge Information
 
