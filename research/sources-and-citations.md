@@ -26,7 +26,7 @@ This directory provides the verified official NASA, USGS, ESA, and peer-reviewed
 | **REMS (Rover Environmental Monitoring)** | MSL Curiosity Rover | [PDS Atmospheres REMS Archive](https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/MARS/curiosity/rems.html) | Ground/air temperature, surface pressure, relative humidity, UV flux, wind velocity |
 | **MEDA (Mars Environmental Dynamics)** | Mars 2020 Perseverance | [PDS Atmospheres MEDA Archive](https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/MARS/mars2020/meda.html) | Dust optical depth ($\tau$), air pressure, thermal infrared sensor, wind sensors |
 | **Mars-GRAM Atmospheric Model** | NASA Langley Research Center | [NASA Software: Mars-GRAM](https://software.nasa.gov/software/MFS-33157-1) | Engineering atmospheric density profiles, scale height, dust storm models |
-| **MAVEN (Mars Atmosphere & Volatiles)** | NASA Goddard Space Flight Center | [MAVEN Mission Archive](https://science.nasa.gov/mission/maven/) | Upper atmosphere ion escape, solar wind interaction, space weather monitoring |
+| **MAVEN (Mars Atmosphere & Volatiles)** | NASA Goddard Space Flight Center | [MAVEN Mission Archive](https://science.nasa.gov/mission/maven/) | Historical upper atmosphere and solar wind measurements. NASA declared the mission ended on 3 June 2026. |
 | **Viking Lander Meteorology** | Viking 1 & Viking 2 Landers | [PDS Viking Meteorology](https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/MARS/viking/viking_lander.html) | Historical diurnal pressure cycles, polar $\text{CO}_2$ condensation cycle |
 
 ---
@@ -63,7 +63,7 @@ This directory provides the verified official NASA, USGS, ESA, and peer-reviewed
 | **USGS THEMIS Night IR Global Mosaic** | USGS Astrogeology Science Center | [USGS THEMIS Night IR Portal](https://astrogeology.usgs.gov/search/map/mars_odyssey_themis_ir_night_100m) | Global 100 m/px thermal inertia map; bedrock vs. unconsolidated dust identification |
 | **Perseverance Science Instruments** | Mars 2020 / NASA JPL | [Mars 2020 Instruments](https://mars.nasa.gov/mars2020/spacecraft/instruments/) | PIXL micro-XRF, SHERLOC deep UV Raman, SuperCam LIBS remote spectroscopy |
 | **Curiosity Science Instruments** | MSL Curiosity / NASA JPL | [MSL Curiosity Instruments](https://mars.nasa.gov/msl/spacecraft/instruments/) | APXS alpha-particle X-ray, ChemCam LIBS, CheMin XRD mineralogy, SAM organics |
-| **Phoenix Perchlorate Discovery** | NASA Phoenix Mars Lander | [Science Magazine: Hecht et al. (DOI: 10.1126/science.1172466)](https://doi.org/10.1126/science.1172466) | Detection of $0.5\%\text{--}1.0\%$ toxic perchlorates ($\text{ClO}_4^-$) in surface regolith |
+| **Phoenix Perchlorate Discovery** | NASA Phoenix Mars Lander | [Hecht et al.](https://doi.org/10.1126/science.1172466) | 0.4–0.6% perchlorate by mass in Phoenix site soil samples |
 
 ---
 
@@ -71,7 +71,7 @@ This directory provides the verified official NASA, USGS, ESA, and peer-reviewed
 
 | System / Instrument | Organization / Mission | Official URL | Operational Space Weather Function |
 | :--- | :--- | :--- | :--- |
-| **RAD (Radiation Assessment Detector)** | MSL Curiosity / SwRI / NASA | [PDS Atmospheres RAD Archive](https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/MARS/curiosity/rad.html) | In-situ surface dose equivalent ($0.64\pm 0.12\text{ mSv/day}$); GCR and SPE events |
+| **RAD (Radiation Assessment Detector)** | MSL Curiosity / SwRI / NASA | [PDS Planetary Plasma Interactions RAD Archive](https://pds-ppi.igpp.ucla.edu/mission/Mars_Science_Laboratory) | Curiosity’s cruise and local surface radiation records |
 | **Mars Surface Radiation Paper** | Science (Hassler et al., 2014) | [Science: MSL RAD Measurements (DOI: 10.1126/science.1244797)](https://doi.org/10.1126/science.1244797) | Peer-reviewed baseline Martian surface radiation dosage and health risks |
 | **NASA Space Radiation Analysis Group** | NASA Johnson Space Center (SRAG) | [NASA Space Radiation Program](https://www.nasa.gov/directorates/esdmd/human-research-program/space-radiation/) | Crew career limits ($600\text{ mSv}$), acute radiation sickness protocols, bio-dosimetry |
 | **NOAA Space Weather Prediction Center** | NOAA / NWS | [NOAA SWPC](https://www.swpc.noaa.gov/) | Real-time solar flare tracking, coronal mass ejection (CME) shockwave forecasting |
@@ -95,7 +95,7 @@ This directory provides the verified official NASA, USGS, ESA, and peer-reviewed
 
 | Organization / Standard | Document Reference | Official URL | Physiological Domain |
 | :--- | :--- | :--- | :--- |
-| **NASA Human Research Program (HRP)** | NASA HRP Evidence Reports | [NASA Human Research Program](https://www.nasa.gov/hrp/) | Neurovestibular adaptation, bone mineral density loss ($1\%/\text{month}$), muscle atrophy |
+| **NASA Human Research Program (HRP)** | NASA HRP Evidence Reports | [NASA gravity research](https://www.nasa.gov/hrp/hazard-gravity-fields/) | Human responses to altered gravity. Long-duration effects at Mars gravity remain uncertain. |
 | **NASA Space Flight Human-System Standard**| NASA-STD-3001 | [NASA Human-System Standard 3001](https://www.nasa.gov/hhp/nasa-standards/) | Ergonomic limits, metabolic consumption ($0.84\text{ kg }\text{O}_2/\text{day}$), toxic gas limits |
 | **Spacesuit Water Membrane Evaporator** | NASA Johnson Space Center (SWME) | [NASA NTRS: SWME Thermal Control](https://ntrs.nasa.gov/citations/20150000305) | Active thermal control in low-pressure $\text{CO}_2$ atmosphere ($200\text{--}500\text{ W}$ heat rejection) |
 | **Circadian Adaptation & Lighting** | NASA Ames Research Center / NTRS | [NASA NTRS: Circadian Lighting](https://ntrs.nasa.gov/citations/20150020833) | Blue-enriched high-lux lighting (460–480 nm) for 24.65-hour Sol synchrony |

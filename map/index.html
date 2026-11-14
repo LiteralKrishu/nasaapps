@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Namib Dune · Martian Map</title>
+  <link rel="stylesheet" href="map.css">
+  <script src="data/survey.js" defer></script>
+  <script src="data/weather.js" defer></script>
+  <script src="data/solar-storm.js" defer></script>
+  <script src="data/water-isru.js" defer></script>
+  <script src="data/swim-resources.js" defer></script>
+  <script src="data/marsquakes.js" defer></script>
+  <script src="map.js" defer></script>
+  <script src="planner.js" defer></script>
+  <script src="weather.js" defer></script>
+  <script src="storm.js" defer></script>
+  <script src="water.js" defer></script>
+  <script src="resources.js" defer></script>
+  <script src="marsquakes.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="masthead">
+      <div>
+        <p class="location">MARTIAN MAP <span></span> GALE CRATER</p>
+        <h1>Namib Dune</h1>
+        <p class="subtitle">Bagnold Dunes · A Marswalk around the slip face</p>
+      </div>
+      <div class="status">Marswalk planner</div>
+    </header>
+    <nav class="section-nav" aria-label="Planner sections">
+      <a href="#traverse">Traverse</a>
+      <a href="#return">Return to base</a>
+      <a href="#gobabeb">Gobabeb science</a>
+      <a href="#weather">Curiosity weather</a>
+      <a href="#solar-storm">Radiation &amp; space weather</a>
+      <a href="#water">Water &amp; ISRU</a>
+      <a href="#resource-exploration">Regional ice &amp; MOXIE</a>
+      <a href="#marsquakes">Marsquakes</a>
+    </nav>
+    <div class="layout" id="traverse">
+      <section class="survey" aria-label="Marswalk map and elevation profile">
+        <div class="toolbar">
+          <h2>Traverse map</h2>
+          <div class="zoom" aria-label="Map zoom">
+            <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+            <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+            <button type="button" id="reset" aria-label="Reset map view">Reset</button>
+          </div>
+        </div>
+        <div class="map-frame">
+          <svg id="map" role="img" tabindex="0" aria-label="North-up orbital map showing the proposed detour, direct comparison, and Namib Dune. Use arrow keys to pan after zooming."></svg>
+          <div class="map-key" aria-hidden="true">
+            <div class="north">↑ <strong>N</strong></div>
+            <div id="scale"><span></span><strong>25 m</strong></div>
+          </div>
+          <div id="map-readout" class="map-readout">Move across the map to inspect coordinates</div>
+        </div>
+        <section class="profile" aria-labelledby="profile-title">
+          <div class="profile-top">
+            <div>
+              <h2 id="profile-title">Elevation profile</h2>
+              <p>Elevation relative to the MOLA areoid</p>
+            </div>
+            <output id="profile-readout"></output>
+          </div>
+          <svg id="profile-chart" viewBox="0 0 800 170" role="img" aria-label="Elevation by distance along the selected route"></svg>
+          <label for="profile-position" class="sr-only">Distance along the selected route</label>
+          <input id="profile-position" type="range" min="0" max="100" value="0" step="1">
+        </section>
+      </section>
+      <aside>
+        <section class="side-panel">
+          <h2>Route comparison</h2>
+          <div class="route-controls" aria-label="Select profile route">
+            <button type="button" data-route="detour" aria-pressed="true">Detour</button>
+            <button type="button" data-route="direct" aria-pressed="false">Direct</button>
+          </div>
+          <dl class="stats">
+            <div><dt>Distance</dt><dd id="distance">—</dd></div>
+            <div><dt>Ascent</dt><dd id="ascent">—</dd></div>
+            <div><dt>Peak slope</dt><dd id="grade">—</dd></div>
+          </dl>
+          <p class="explanation" id="route-note"></p>
+          <a class="route-plan-link" href="#return">Check return budget ↓</a>
+        </section>
+        <section class="side-panel">
+          <h2>Layers</h2>
+          <label class="layer"><span class="swatch imagery"></span>HiRISE imagery<input type="checkbox" data-layer="imagery" checked></label>
+          <label class="layer"><span class="swatch contour"></span>2 m elevation contours<input type="checkbox" data-layer="contours" checked></label>
+          <label class="layer"><span class="swatch slope"></span>Terrain slope<input type="checkbox" data-layer="slope"></label>
+          <div class="slope-legend" id="slope-legend" hidden><span>15–20°</span> <span>20–30°</span> <span>30°+</span></div>
+          <label class="layer"><span class="swatch hazard"></span>Dune exclusion zone<input type="checkbox" data-layer="hazard" checked></label>
+          <label class="layer"><span class="swatch track"></span>Curiosity rover track<input type="checkbox" data-layer="history" checked></label>
+          <label class="layer"><span class="swatch dan"></span>Curiosity DAN samples<input type="checkbox" data-layer="dan" disabled></label>
+          <p class="coverage-note"><a href="#water">Water evidence and coverage ↓</a></p>
+          <p class="coverage-note">Dark gaps at the mosaic edges show missing imagery.</p>
+        </section>
+        <section class="side-panel science">
+          <h2>Gobabeb science stop</h2>
+          <img src="data/namib-surface.webp" alt="Curiosity view of ripples and the steep downwind face of Namib Dune">
+          <p>Curiosity sampled wind-sorted sand at the dune margin on sol 1225.</p>
+          <a href="#gobabeb">Explore the observations ↓</a>
+        </section>
+      </aside>
+    </div>
+
+    <section class="detail-panel" id="return" aria-labelledby="return-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="return-title">Return to base</h2>
+          <p>Plan the round trip on the selected traverse and see how much time you have for science and delays.</p>
+        </div>
+        <span class="data-tag" id="return-route"></span>
+      </div>
+      <form id="return-form">
+        <div class="pace-fields">
+          <label>Outbound pace <span>m/s</span><input name="outbound" type="number" min="0.05" max="5" step="0.01" value="0.70" required></label>
+          <label>Return pace <span>m/s</span><input name="inbound" type="number" min="0.05" max="5" step="0.01" value="0.60" required></label>
+          <label>Time at stop <span>min</span><input name="stop" type="number" min="0" max="1440" step="0.1" value="15" required></label>
+          <label>Delay at stop <span>min</span><input name="delay" type="number" min="0" max="1440" step="0.1" value="0" required></label>
+        </div>
+        <table class="data-table budget-table">
+          <caption>Suit endurance and reserve in Earth minutes</caption>
+          <thead><tr><th scope="col">Resource</th><th scope="col" id="available-col">At departure</th><th scope="col" id="reserve-col">Minimum reserve</th><th scope="col">At return</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" id="oxygen-label">Oxygen</th><td><input name="oxygen" aria-labelledby="oxygen-label available-col" type="number" min="0" max="1440" step="0.1" value="90" required></td><td><input name="oxygenReserve" aria-labelledby="oxygen-label reserve-col" type="number" min="0" max="1440" step="0.1" value="20" required></td><td data-balance="oxygen">—</td></tr>
+            <tr><th scope="row" id="co2-label">CO₂ removal</th><td><input name="co2" aria-labelledby="co2-label available-col" type="number" min="0" max="1440" step="0.1" value="100" required></td><td><input name="co2Reserve" aria-labelledby="co2-label reserve-col" type="number" min="0" max="1440" step="0.1" value="20" required></td><td data-balance="co2">—</td></tr>
+            <tr><th scope="row" id="battery-label">Battery</th><td><input name="battery" aria-labelledby="battery-label available-col" type="number" min="0" max="1440" step="0.1" value="110" required></td><td><input name="batteryReserve" aria-labelledby="battery-label reserve-col" type="number" min="0" max="1440" step="0.1" value="25" required></td><td data-balance="battery">—</td></tr>
+            <tr><th scope="row" id="cooling-label">Cooling water</th><td><input name="cooling" aria-labelledby="cooling-label available-col" type="number" min="0" max="1440" step="0.1" value="85" required></td><td><input name="coolingReserve" aria-labelledby="cooling-label reserve-col" type="number" min="0" max="1440" step="0.1" value="25" required></td><td data-balance="cooling">—</td></tr>
+          </tbody>
+        </table>
+        <div class="form-actions">
+          <p id="return-input-error" class="form-error" aria-live="polite"></p>
+          <button type="reset">Reset inputs</button>
+        </div>
+      </form>
+      <div id="return-results" class="planner-result">
+        <dl class="readings">
+          <div><dt>Round trip</dt><dd id="round-trip">—</dd></div>
+          <div><dt>Time margin</dt><dd id="time-margin">—</dd></div>
+          <div><dt>Limiting resource</dt><dd id="limiting-resource">—</dd></div>
+          <div><dt>Latest departure from stop</dt><dd id="latest-departure">—</dd></div>
+        </dl>
+        <p id="return-status" role="status"></p>
+      </div>
+      <section id="return-timeline" class="return-timeline" aria-labelledby="return-timeline-title" hidden>
+        <h3 id="return-timeline-title">Trip timeline</h3>
+        <p id="return-reserve-note" class="section-note"></p>
+        <div class="return-track" aria-hidden="true">
+          <div id="return-track-phases"></div>
+          <i id="return-reserve-marker" hidden></i>
+        </div>
+        <dl id="return-phases" class="readings"></dl>
+      </section>
+      <p class="section-note">The simulation uses the same path both ways and assumes constant resource use. Enter average walking paces and suit endurance for the planned workload. Delays are modeled at the stop before return. The starting values are illustrative.</p>
+    </section>
+
+    <section class="detail-panel" id="gobabeb" aria-labelledby="gobabeb-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="gobabeb-title">Gobabeb science stop</h2>
+          <p>Examine how wind sorts the sand on the western margin of Namib Dune.</p>
+        </div>
+        <div class="data-links">
+          <a href="#traverse">View sampling area on map ↑</a>
+          <a href="#weather" id="gobabeb-weather">Weather on sampling sol ↓</a>
+        </div>
+      </div>
+      <div class="science-layout">
+        <div>
+          <figure class="science-figure">
+            <a href="data/namib-ripples.webp"><img src="data/namib-ripples.webp" width="2400" height="287" alt="Small straight ripples between larger curved ripple crests across Namib Dune" loading="lazy"></a>
+            <figcaption>Namib Dune, Mastcam, sol 1192. Trace the large, curved crests about 3 m apart, then look for smaller ripples between them. <a href="https://www.jpl.nasa.gov/images/pia20755-two-sizes-of-ripples-on-surface-of-martian-sand-dune/">NASA/JPL-Caltech/MSSS · PIA20755</a></figcaption>
+          </figure>
+          <figure class="science-figure">
+            <a href="data/namib-surface.webp"><img src="data/namib-surface.webp" width="1000" height="241" alt="Steep Namib Dune slip face seen from Curiosity" loading="lazy"></a>
+            <figcaption>Namib’s downwind slip face. Curiosity photographed sand that had moved down the steep face. <a href="https://science.nasa.gov/photojournal/slip-face-on-downwind-side-of-namib-sand-dune-on-mars/">NASA/JPL-Caltech/MSSS · PIA20281</a></figcaption>
+          </figure>
+        </div>
+        <div class="sample-results">
+          <h3>What Curiosity measured</h3>
+          <p>Curiosity scooped sand near small ripple crests. CheMin used X-ray diffraction on grains smaller than 150 µm. The four largest mineral shares below describe the crystalline portion of that sample.</p>
+          <table class="data-table mineral-table">
+            <caption>CheMin · crystalline mass fraction · ±1σ</caption>
+            <tbody>
+              <tr><th scope="row">Plagioclase</th><td><meter min="0" max="100" value="36.5" aria-label="Plagioclase crystalline mass fraction"></meter></td><td>36.5 ± 0.8%</td></tr>
+              <tr><th scope="row">Olivine</th><td><meter min="0" max="100" value="25.8" aria-label="Olivine crystalline mass fraction"></meter></td><td>25.8 ± 0.4%</td></tr>
+              <tr><th scope="row">Augite</th><td><meter min="0" max="100" value="22" aria-label="Augite crystalline mass fraction"></meter></td><td>22.0 ± 0.4%</td></tr>
+              <tr><th scope="row">Pigeonite</th><td><meter min="0" max="100" value="10.6" aria-label="Pigeonite crystalline mass fraction"></meter></td><td>10.6 ± 0.4%</td></tr>
+            </tbody>
+          </table>
+          <p>CheMin also estimated that 35 ± 15% of the whole sample was X-ray amorphous. <a href="https://doi.org/10.1002/2017JE005262">CheMin analysis, Table 1</a></p>
+          <h3>Compare the size fractions</h3>
+          <p>APXS measured 7.57 wt% magnesium oxide in the fine discard pile A (&lt;150 µm) and 11.50 wt% in coarse pile B (&gt;150 µm). The higher value in the coarse pile shows how grain size affects the chemistry measured at one site. <a href="https://doi.org/10.1002/2017JE005267">Campaign synthesis, Table 3</a></p>
+          <h3>How the dunes hold heat</h3>
+          <p>Mars Odyssey’s THEMIS instrument gave a field-wide apparent thermal inertia of 240 ± 20 J m⁻² K⁻¹ s⁻½. Models using Curiosity ground temperatures at Namib gave 170–200 in the same units. The observations cover different areas and help explain how sand heats and cools. <a href="https://doi.org/10.1029/2017JE005501">THEMIS analysis</a> · <a href="https://doi.org/10.1029/2021JE007076">Namib comparison</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-panel" id="weather" aria-labelledby="weather-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="weather-title">Historical Curiosity weather</h2>
+          <p>Explore both Bagnold campaign phases. Within-sol times use Curiosity’s local mean solar time (LMST).</p>
+        </div>
+        <span class="data-tag">Archived observations</span>
+      </div>
+      <div class="weather-controls">
+        <label for="weather-sol">Curiosity sol</label>
+        <button type="button" id="weather-previous" aria-label="Previous campaign sol" disabled>‹</button>
+        <select id="weather-sol" disabled></select>
+        <button type="button" id="weather-next" aria-label="Next campaign sol" disabled>›</button>
+        <div class="weather-metrics" role="group" aria-label="Weather chart measurement">
+          <button type="button" data-measurement="temperature" aria-pressed="true">Temperature</button>
+          <button type="button" data-measurement="pressure" aria-pressed="false">Pressure</button>
+          <button type="button" data-measurement="wind" aria-pressed="false">Wind</button>
+        </div>
+      </div>
+      <div class="weather-timeline">
+        <label for="weather-timeline">Campaign sol timeline</label>
+        <input type="range" id="weather-timeline" min="0" max="1" value="0" disabled>
+        <div class="weather-phase-labels"><span>High Dune and Namib</span><span>Nathan Bridges Dune and Mount Desert Island</span></div>
+      </div>
+      <p id="weather-sol-context" class="section-note" aria-live="polite">Loading local archive…</p>
+      <dl class="readings weather-readings" id="weather-summary"></dl>
+      <div class="weather-view" role="group" aria-label="Weather chart time scale">
+        <button type="button" data-weather-view="sol" aria-pressed="true">Within sol</button>
+        <button type="button" data-weather-view="campaign" aria-pressed="false">Campaign overview</button>
+      </div>
+      <canvas id="weather-chart" role="img" aria-describedby="weather-chart-note"></canvas>
+      <p id="weather-chart-note" class="section-note">30-minute means. Empty periods have no readings that pass the selected quality checks.</p>
+      <details id="weather-details">
+        <summary>View weather values by local time</summary>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Weather values table">
+          <table class="data-table weather-table">
+            <caption>Mean and accepted readings per 30-minute window</caption>
+            <thead><tr><th scope="col">LMST window</th><th scope="col">Air · °C</th><th scope="col">Ground · °C</th><th scope="col">Pressure · Pa</th><th scope="col">Wind · m/s</th></tr></thead>
+            <tbody id="weather-rows"></tbody>
+          </table>
+        </div>
+      </details>
+      <p class="section-note">Wind coverage is sparse. Accepted readings include preliminary archive estimates with favorable sensor flags. <a href="https://doi.org/10.1016/j.icarus.2016.12.016">Bagnold wind study</a></p>
+      <div class="data-links">
+        <a id="weather-source" href="https://atmos.nmsu.edu/PDS/data/PDS4/msl_rems_bundle/data_calibrated/SOL_01160_01293/">NASA PDS weather archive</a>
+        <a href="data/rems-weather.csv" download>Download 30-minute data</a>
+        <a href="data/rems-daily.csv" download>Download daily reports</a>
+        <a href="https://mars.nasa.gov/rss/api/?feed=weather&amp;category=msl&amp;feedtype=json">NASA daily report source</a>
+        <a href="README.md#historical-weather">Filters and data coverage</a>
+      </div>
+    </section>
+    <section class="detail-panel" id="solar-storm" aria-labelledby="storm-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="storm-title">May 2024 solar storm replay</h2>
+          <p>Compare Curiosity’s surface radiation with MAVEN’s orbital particle flux. Curiosity recorded the storm elsewhere in Gale Crater, years after its visit to Namib Dune.</p>
+        </div>
+        <span class="data-tag">19–22 May 2024 · UTC</span>
+      </div>
+      <p id="storm-unavailable" class="section-note" hidden>The bundled storm records could not be loaded.</p>
+      <div id="storm-replay" hidden>
+        <dl class="readings storm-readings">
+          <div><dt>Pre-storm surface background · May 15–19</dt><dd id="storm-background"></dd></div>
+          <div><dt>Peak surface dose rate · May 20</dt><dd id="storm-peak-rate"></dd></div>
+          <div><dt>Peak compared with background</dt><dd id="storm-peak-ratio"></dd></div>
+        </dl>
+        <div class="storm-controls" role="group" aria-label="Storm playback">
+          <button type="button" id="storm-play">Play replay</button>
+          <button type="button" id="storm-back" aria-label="Previous 30-minute window">‹</button>
+          <button type="button" id="storm-next" aria-label="Next 30-minute window">›</button>
+          <button type="button" id="storm-peak">Jump to RAD peak</button>
+        </div>
+        <div class="storm-timeline">
+          <div><label for="storm-time">Replay window</label><span id="storm-window"></span></div>
+          <input id="storm-time" type="range" min="0" max="1" step="1" value="0">
+          <div class="storm-days"><span>19 May</span><span>20 May</span><span>21 May</span><span>22 May</span></div>
+        </div>
+        <div class="storm-tracks">
+          <section aria-labelledby="storm-rad-title">
+            <div class="storm-track-heading">
+              <div><h3 id="storm-rad-title">Curiosity RAD · surface</h3><p>Detector E absorbed dose rate</p></div>
+              <div><strong id="storm-rad-value">—</strong><span id="storm-rad-count"></span></div>
+            </div>
+            <canvas id="storm-rad-chart" class="storm-chart" role="img" aria-describedby="storm-method"></canvas>
+          </section>
+          <section aria-labelledby="storm-maven-title">
+            <div class="storm-track-heading">
+              <div><h3 id="storm-maven-title">MAVEN SEP · orbit</h3><p>Forward ion flux at 2.24 MeV · sensor 1</p></div>
+              <div><strong id="storm-maven-value">—</strong><span id="storm-maven-count"></span></div>
+            </div>
+            <canvas id="storm-maven-chart" class="storm-chart" role="img" aria-describedby="storm-method"></canvas>
+          </section>
+        </div>
+        <p id="storm-method" class="section-note">The charts show 30-minute UTC means. The shaded band marks May 20. The dashed horizontal line shows the median of Curiosity’s May 15–19 readings. MAVEN gaps show where no readings pass the archive filters and instrument settings used here. The orbital track measures ion flux in one direction and energy band.</p>
+        <p id="storm-peak-note" class="section-note"></p>
+        <p id="storm-announcement" class="sr-only" role="status"></p>
+        <details class="storm-data">
+          <summary>View replay measurements</summary>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Storm measurements table">
+            <table class="data-table weather-table">
+              <caption>30-minute means and accepted sample counts</caption>
+              <thead><tr><th scope="col">Window start · UTC</th><th scope="col">RAD · µGy/day (n)</th><th scope="col">SEP · ions/(cm²·s·sr·keV) (n)</th></tr></thead>
+              <tbody id="storm-rows"></tbody>
+            </table>
+          </div>
+        </details>
+        <div class="data-links">
+          <a href="data/solar-storm.csv" download>Download replay CSV</a>
+          <a href="https://spdf.gsfc.nasa.gov/pub/data/aaa_planetary/msl/rad/cdf/obs-l2/2024/">NASA RAD data</a>
+          <a href="https://spdf.gsfc.nasa.gov/pub/data/maven/sep/l2/s1-cal-svy-full/2024/05/">NASA MAVEN SEP data</a>
+          <a href="https://www.jpl.nasa.gov/news/nasa-watches-mars-light-up-during-epic-solar-storm/">JPL event report</a>
+          <a href="README.md#solar-storm-replay">Replay data and filters</a>
+        </div>
+      </div>
+    </section>
+    <section class="detail-panel" id="resource-exploration" aria-labelledby="resources-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="resources-title">Water ice &amp; resources</h2>
+          <p>Explore regional evidence for buried water ice and results from Perseverance’s oxygen production experiment.</p>
+        </div>
+      </div>
+      <h3>Regional ice evidence</h3>
+      <p id="swim-unavailable" class="section-note" hidden>The bundled SWIM maps could not be loaded.</p>
+      <div id="swim-explorer" hidden>
+        <div id="swim-depths" class="resource-controls" role="group" aria-label="Subsurface depth"></div>
+        <div class="swim-map-frame">
+          <img id="swim-map" width="1440" height="480" alt="SWIM regional ice evidence on Mars from 60° S to 60° N">
+          <div id="swim-markers" aria-label="Site markers"></div>
+        </div>
+        <p id="swim-image-error" class="section-note" hidden>The selected map image could not be loaded.</p>
+        <ul class="swim-legend" aria-label="Ice evidence map legend">
+          <li><span class="swim-below"></span>Below study threshold</li>
+          <li><span class="swim-strong"></span><span id="swim-threshold"></span></li>
+          <li><span class="swim-missing"></span>No mapped value</li>
+        </ul>
+        <div class="swim-inspect">
+          <div>
+            <label for="swim-resource-site">Inspect a location</label>
+            <select id="swim-resource-site"></select>
+            <p id="swim-coordinates" class="section-note"></p>
+          </div>
+          <div class="swim-readout" role="status">
+            <strong id="swim-score"></strong>
+            <span id="swim-result"></span>
+          </div>
+        </div>
+        <details class="storm-data">
+          <summary>Compare evidence across all depths</summary>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="SWIM site comparison table">
+            <table class="data-table swim-table">
+              <caption>SWIM ice-consistency scores at the selected locations</caption>
+              <thead id="swim-table-head"></thead>
+              <tbody id="swim-table-body"></tbody>
+            </table>
+          </div>
+        </details>
+        <p class="section-note">The SWIM score combines measurements that are more or less consistent with buried ice. The original cells are about 3 km wide at the equator. Ice presence, concentration, and extraction feasibility at a specific site require local evidence.</p>
+        <div class="data-links">
+          <a id="swim-source" href="https://swim.psi.edu/SWIM4MIMProducts.php">Original SWIM GeoTIFF</a>
+          <a href="https://doi.org/10.3847/PSJ/ad9b24">Study and evidence thresholds</a>
+          <a href="README.md#water-ice-and-resources">Map and site methods</a>
+          <a href="#water">Local water evidence at Namib ↓</a>
+        </div>
+      </div>
+      <article class="moxie-panel" aria-labelledby="moxie-title">
+        <figure class="science-figure">
+          <img src="data/moxie.webp" width="1000" height="750" alt="Gold-colored MOXIE instrument installed inside Perseverance" loading="lazy">
+          <figcaption>MOXIE installed in Perseverance. <a href="https://science.nasa.gov/photojournal/moxie-all-tucked-in/">NASA/JPL-Caltech · PIA24203</a></figcaption>
+        </figure>
+        <div>
+          <h3 id="moxie-title">MOXIE oxygen production</h3>
+          <p>At Jezero Crater, Perseverance’s Mars Oxygen In-Situ Resource Utilization Experiment used solid-oxide electrolysis to split atmospheric carbon dioxide and produce oxygen.</p>
+          <dl class="readings moxie-readings">
+            <div><dt>Total oxygen</dt><dd>122 g</dd></div>
+            <div><dt>Production runs</dt><dd>16</dd></div>
+            <div><dt>Peak output rate</dt><dd>12 g/h</dd></div>
+            <div><dt>Oxygen purity at peak</dt><dd>≥98%</dd></div>
+          </dl>
+          <p class="section-note">MOXIE made 9.8 g on its final run on August 7, 2023. The experiment used atmospheric CO₂ and vented the oxygen after measuring its purity.</p>
+          <a href="https://www.jpl.nasa.gov/news/nasas-oxygen-generating-experiment-moxie-completes-mars-mission/">NASA/JPL mission results</a>
+        </div>
+      </article>
+    </section>
+    <section class="detail-panel" id="water" aria-labelledby="water-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="water-title">Water &amp; ISRU</h2>
+          <p>Compare Curiosity’s shallow hydrogen readings with NASA’s regional ice maps. In-situ resource utilization (ISRU) means using materials available at the site.</p>
+        </div>
+      </div>
+      <p id="water-unavailable" class="section-note">The bundled water data could not be loaded.</p>
+      <div id="water-evidence" class="water-evidence" hidden>
+        <section class="water-source" aria-labelledby="dan-title">
+          <h3 id="dan-title">Curiosity DAN · Namib traverse</h3>
+          <p class="section-note">DAN uses neutrons to estimate hydrogen in the upper ~60 cm. Water-equivalent hydrogen (WEH) expresses that hydrogen as a water mass fraction. The signal can include hydrogen bound in minerals.</p>
+          <dl class="readings water-readings">
+            <div><dt>Gobabeb-area sand · active sample</dt><dd id="dan-gobabeb"></dd></div>
+            <div><dt>Records within the Namib map</dt><dd id="dan-coverage"></dd></div>
+          </dl>
+          <div class="water-actions">
+            <button id="dan-show-on-map" type="button">Show DAN samples on map ↑</button>
+            <span class="section-note">Circles show active samples. Squares show passive samples.</span>
+          </div>
+          <label for="dan-point">Inspect a DAN record</label>
+          <select id="dan-point"></select>
+          <p id="dan-reading" class="section-note" role="status"></p>
+          <p class="section-note">DAN records follow the rover’s path. Unmarked areas have no mapped estimate in this dataset. Deeper layers are beyond DAN’s sensing depth.</p>
+          <p class="section-note">Across Curiosity’s broader Gale traverse through sol 3333, DAN estimates ranged from near zero to 6.1 ± 0.7 wt% WEH. At Gobabeb, heating sand in the rover’s SAM instrument released water at temperatures consistent with hydrogen bound in minerals.</p>
+          <div class="data-links">
+            <a href="data/dan-namib.csv" download>Download local DAN estimates</a>
+            <a href="https://zenodo.org/records/6974535">DAN derived data</a>
+            <a href="https://doi.org/10.1029/2022JE007327">Gale traverse study</a>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5815393/">Gobabeb sand study</a>
+            <a href="https://pds-geosciences.wustl.edu/missions/msl/dan.htm">NASA DAN archive</a>
+          </div>
+        </section>
+        <section class="water-source" aria-labelledby="swim-title">
+          <h3 id="swim-title">NASA SWIM · Gale Crater region</h3>
+          <p class="section-note">Subsurface Water Ice Mapping combines orbital evidence at ~3 km per cell. The marker shows Namib’s location within the larger Gale region.</p>
+          <div class="water-actions" role="group" aria-label="SWIM depth">
+            <button type="button" data-swim-depth="shallow" aria-pressed="true">0–1 m</button>
+            <button type="button" data-swim-depth="middle" aria-pressed="false">1–5 m</button>
+            <button type="button" data-swim-depth="deep" aria-pressed="false">Below 5 m</button>
+          </div>
+          <figure class="water-figure">
+            <div class="water-map">
+              <img id="swim-image" src="data/swim-shallow.png" alt="Regional SWIM ice consistency grid around Gale Crater">
+              <span id="swim-site" class="water-site" aria-hidden="true"><span>Namib</span></span>
+            </div>
+            <figcaption class="water-key">
+              <span><i class="swim-scale"></i>−1 against ice · 0 neutral · +1 supports ice</span>
+              <span><i class="swim-nodata"></i>No data</span>
+            </figcaption>
+          </figure>
+          <p id="swim-reading" class="water-score" role="status"></p>
+          <p class="section-note">Scores describe agreement with buried ice. A neutral score leaves the question open. NASA’s 2023 northern map ends at the equator. These later composites cover Gale at 4.68° S, where orbital data still leave the presence of ice uncertain.</p>
+          <div class="data-links">
+            <a href="https://swim.psi.edu/SWIM4MIMProducts.php">SWIM depth maps</a>
+            <a href="https://science.nasa.gov/resource/swim-map-shows-subsurface-water-ice-on-mars/">NASA 2023 map</a>
+            <a href="https://www.usgs.gov/publications/subsurface-water-ice-mapping-mars-a-probabilistic-approach">Equatorial uncertainty study</a>
+          </div>
+        </section>
+      </div>
+      <section class="water-planning" aria-labelledby="water-planning-title">
+        <h3 id="water-planning-title">ISRU planning</h3>
+        <p class="section-note"><strong>Recoverable water at Namib remains unverified.</strong> Estimating a supply requires samples that identify the form of the water, the deposit’s depth and extent, and a test that measures extraction yield, energy use, and water quality.</p>
+        <div class="data-links">
+          <a href="README.md#water-and-isru">Data and methods</a>
+          <a href="#resource-exploration">Compare regional ice evidence ↑</a>
+          <a href="#moxie-title">MOXIE oxygen results ↑</a>
+        </div>
+      </section>
+    </section>
+    <section class="detail-panel" id="marsquakes" aria-labelledby="marsquakes-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="marsquakes-title">Marsquakes</h2>
+          <p>Explore seismic signals NASA’s InSight lander recorded from 2019 to 2022. The map shows estimated quake sources and impact sites identified in orbital images.</p>
+        </div>
+        <span class="data-tag">InSight · Catalog V14</span>
+      </div>
+      <p id="quake-unavailable" class="section-note" hidden>The bundled InSight catalog could not be loaded.</p>
+      <div id="quake-explorer" hidden>
+        <div class="quake-filters">
+          <label>Earth year
+            <select id="quake-year"><option value="">All years</option></select>
+          </label>
+          <label>Location evidence
+            <select id="quake-location">
+              <option value="">All events</option>
+              <option value="epicenter">Mapped epicenter</option>
+              <option value="distance">Distance only</option>
+              <option value="bearing">Direction only</option>
+              <option value="none">No location estimate</option>
+            </select>
+          </label>
+          <p id="quake-count" class="section-note"></p>
+        </div>
+        <div class="quake-overview">
+          <figure class="quake-globe">
+            <div class="quake-map">
+              <img src="data/marsquake-basemap.webp" width="1024" height="512" alt="Global Mars topography from 180° W to 180° E, north up" loading="lazy">
+              <svg viewBox="0 0 360 180" aria-hidden="true">
+                <path d="M60 0V180M120 0V180M180 0V180M240 0V180M300 0V180M0 30H360M0 60H360M0 90H360M0 120H360M0 150H360"/>
+              </svg>
+              <canvas id="quake-area" width="720" height="360" aria-hidden="true"></canvas>
+              <div id="quake-markers" role="group" aria-label="Mapped epicenters"></div>
+              <span id="quake-insight" class="quake-insight" title="InSight lander" aria-hidden="true"></span>
+              <span id="quake-gale" class="quake-gale" title="Gale Crater center" aria-hidden="true"></span>
+            </div>
+            <figcaption class="quake-legend">
+              <span><i class="quake-dot"></i>Epicenter</span>
+              <span><i class="quake-impact"></i>Impact</span>
+              <span><i class="quake-station"></i>InSight</span>
+              <span><i class="quake-gale"></i>Gale Crater</span>
+              <span><i class="quake-range"></i>Selected distance evidence</span>
+            </figcaption>
+          </figure>
+          <article class="quake-event" aria-labelledby="quake-event-title">
+            <div class="quake-event-heading">
+              <h3 id="quake-event-title"></h3>
+              <span id="quake-event-type"></span>
+            </div>
+            <p id="quake-date" class="section-note"></p>
+            <dl id="quake-event-readings" class="readings">
+              <div><dt>Moment magnitude</dt><dd id="quake-magnitude"></dd></div>
+              <div><dt>Signal quality</dt><dd id="quake-quality"></dd></div>
+              <div><dt>Epicenter</dt><dd id="quake-epicenter"></dd></div>
+              <div><dt>Distance / direction from InSight</dt><dd id="quake-distance"></dd></div>
+            </dl>
+            <p id="quake-uncertainty" class="section-note"></p>
+          </article>
+        </div>
+        <div class="quake-timeline">
+          <h3>Event timeline</h3>
+          <canvas id="quake-chart" role="img" aria-label="Events by UTC date and moment magnitude, with a separate row for events without a magnitude" aria-describedby="quake-chart-note"></canvas>
+          <p id="quake-chart-note" class="section-note">Select a point or use the event controls. The vertical bar shows the selected event’s magnitude uncertainty.</p>
+          <div class="quake-navigation">
+            <label for="quake-time">Browse in time order</label>
+            <input id="quake-time" type="range" min="0" max="0" step="1" value="0">
+            <label class="sr-only" for="quake-event-select">Catalog event</label>
+            <div class="quake-step">
+              <button id="quake-previous" type="button" aria-label="Previous event">‹</button>
+              <select id="quake-event-select"></select>
+              <button id="quake-next" type="button" aria-label="Next event">›</button>
+            </div>
+          </div>
+        </div>
+        <p id="quake-announcement" role="status" class="sr-only"></p>
+        <p class="section-note">A shaded band shows the published distance bounds in every direction. A narrow line shows an estimated distance when the archive gives no bounds. Some events have only a direction or no location estimate.</p>
+        <section class="quake-gale-context" aria-labelledby="quake-gale-title">
+          <h3 id="quake-gale-title">What InSight tells us about Gale</h3>
+          <p id="quake-gale-summary" class="section-note"></p>
+          <p class="section-note">InSight measured shaking at one station in Elysium Planitia. Many located events cluster near Cerberus Fossae, east of the lander. Many other records give a distance without a direction. The catalog leaves Gale’s local shaking and quake frequency unresolved.</p>
+        </section>
+        <div class="data-links">
+          <a href="data/marsquakes.csv" download>Download events CSV</a>
+          <a href="https://pds.nasa.gov/ds-view/pds/viewCollection.jsp?identifier=urn%3Anasa%3Apds%3Ainsight_seis%3Adata_derived">NASA PDS catalog</a>
+          <a href="README.md#marsquakes">Catalog and map methods</a>
+          <a href="https://planetarynames.wr.usgs.gov/Feature/Gale">USGS Gale Crater reference</a>
+          <a href="https://doi.org/10.1029/2023JE007826">InSight seismicity study</a>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <p>Terrain and imagery by USGS Astrogeology, NASA, JPL-Caltech, and the University of Arizona. Rover track from NASA PDS PLACES. Surface photo by NASA/JPL-Caltech.</p>
+      <a href="data/profile.csv" download>Download elevation data</a>
+      <a href="https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m">USGS source ↗</a>
+    </footer>
+    <noscript>This map requires JavaScript.</noscript>
+  </main>
+</body>
+</html>
