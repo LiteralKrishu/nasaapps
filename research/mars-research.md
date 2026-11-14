@@ -55,10 +55,7 @@ Spectrometers (CRISM, OMEGA, Mini-TES) have revealed rich aqueous history:
 ### Regolith Mechanics & Hazards
 * **Grain Size & Shape:** Martian regolith consists of basaltic fragments, volcanic glass, and ultra-fine dust (median diameter ~2 to 5 micrometers). Because there is no liquid water or dense air to smooth grain edges, particles are sharp, angular, and abrasive.
 * **Electrostatic Charging:** In the dry, low-pressure atmosphere, friction from winds and mechanical motion charges dust particles electrostatically. Dust adheres tenaciously to spacesuit fabrics, helmet visors, solar panels, and mechanical joints.
-* **Toxic Perchlorates ($\text{ClO}_4^-$):**
-  * Discovered by the Phoenix lander (2008) and confirmed by Curiosity and Perseverance, calcium and magnesium perchlorates comprise approximately **0.5% to 1.0% of the soil by mass**.
-  * **Health Hazards:** Perchlorates are potent thyroid endocrine disruptors that inhibit iodine uptake, cause aplastic anemia, and irritate mucous membranes and lung tissues if tracked into the habitat.
-  * **Operational Requirement:** Multi-stage airlock dust mitigation (electrostatic showers, vacuum brush-off, sacrificial outer overgarments) is mandatory to prevent habitat contamination.
+* **Perchlorates ($\text{ClO}_4^-$).** Phoenix measured 0.4–0.6% perchlorate by mass in its sampled soils in the northern plains. A surface-concentration map for a Gale route would need local measurements. [Phoenix soil analysis](https://doi.org/10.1126/science.1172466)
 
 *Sources: [NASA Mars 2020 Science Team](https://mars.nasa.gov/mars2020/mission/science/); [NASA Mars Phoenix Mission Science Results](https://www.nasa.gov/mission_pages/phoenix/main/index.html).*
 
@@ -67,16 +64,15 @@ Spectrometers (CRISM, OMEGA, Mini-TES) have revealed rich aqueous history:
 ## 4. Atmosphere, Pressure & Seasonal Dynamic Cycles
 
 ### Composition of the Martian Atmosphere
-The Martian atmosphere is extraordinarily thin, containing less than 1% of Earth's atmospheric mass:
+These are annual mean volume fractions measured by Curiosity SAM in Gale Crater. [Trainer et al.](https://doi.org/10.1029/2019JE006175)
 
 | Atmospheric Gas | Volume Percentage | Operational Relevance |
 | :--- | :--- | :--- |
-| **Carbon Dioxide ($\text{CO}_2$)** | 95.32% | Primary feedstock for MOXIE/ISRU oxygen generation via solid oxide electrolysis. |
-| **Nitrogen ($\text{N}_2$)** | 2.60% | Critical buffer gas needed for habitat breathing mixtures ($80/20\text{ N}_2/\text{O}_2$). |
-| **Argon ($\text{Ar}$)** | 1.90% | Chemically inert; noble gas tracer. |
-| **Oxygen ($\text{O}_2$)** | 0.16% | Negligible; breathable air must be artificially synthesized and scrubbed. |
-| **Carbon Monoxide ($\text{CO}$)** | 0.08% | Photodissociation byproduct of $\text{CO}_2$; toxic gas. |
-| **Water Vapor ($\text{H}_2\text{O}$)** | ~0.03% (variable) | Dynamic column humidity, frosts, and occasional ground fogs. |
+| **Carbon dioxide ($\text{CO}_2$)** | 95.1% | Feedstock used in the MOXIE oxygen experiment. |
+| **Nitrogen ($\text{N}_2$)** | 2.59% | Atmospheric tracer of seasonal mixing. |
+| **Argon-40 ($^{40}\text{Ar}$)** | 1.94% | Noble gas tracer. |
+| **Oxygen ($\text{O}_2$)** | 0.161% | Too scarce to support breathing in the ambient atmosphere. |
+| **Carbon monoxide ($\text{CO}$)** | 0.058% | Trace constituent. |
 
 ### Atmospheric Surface Pressure & The Armstrong Limit
 * **Mean Surface Pressure:** ~610 Pascals (6.1 hPa / 0.088 psi / ~0.006 atm).
@@ -99,7 +95,7 @@ Due to the thin atmosphere and low thermal inertia of the dry surface, Mars exhi
 * **Global Average Surface Temperature:** -60 °C (213 K / -80 °F).
 * **Diurnal Equatorial Range (Summer):** Midday highs can reach **+20 °C to +25 °C (68 °F to 77 °F)** at ground level, plunging rapidly after sunset to **-73 °C to -90 °C (-100 °F to -130 °F)** before dawn.
 * **Polar Winter Extremes:** Surface temperatures reach lows of **-140 °C (-220 °F / 133 K)**.
-* **Steep Vertical Thermal Gradient:** Because the thin air conducts heat poorly, an astronaut standing on the equator at noon might experience +20 °C at their boots and 0 °C at their helmet.
+* **Air and ground temperature.** They are distinct quantities measured by different REMS sensors. Keep both series separate on the map. [Gale surface energy budget](https://doi.org/10.1029/2020JE006804)
 
 ### Engineering & Physiological Impacts on EVAs:
 1. **Active Thermal Control Systems (ATCS):** Spacesuits must feature closed-loop liquid cooling and ventilation garments (LCVG). Unlike on the Moon where vacuum sublimation works well, Mars' 6 hPa atmosphere interferes with water sublimation boilers; specialized membrane evaporators or phase-change heat exchangers are needed.
@@ -112,15 +108,11 @@ Due to the thin atmosphere and low thermal inertia of the dry surface, Mars exhi
 
 ### The Areoid (Martian Zero Elevation Datum)
 Unlike Earth, Mars has no sea level. Modern planetary science defines the elevation datum using the **MOLA Areoid**:
-* Defined as the gravitational equipotential surface whose average equatorial radius equals the planet's mean radius of **3,396,000 meters** (or alternatively, the level where average atmospheric pressure is 6.105 mbar / 610.5 Pa).
+* The MOLA areoid is a gravitational equipotential surface with a mean equatorial radius of 3,396,000 m. MOLA topography gives the difference between the measured radius and areoid radius at the same location. [MOLA product specification](https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/document/egdrsis.pdf)
 * Total Elevation Relief: **30.1 kilometers**, ranging from -8.2 km (floor of Hellas Basin) to +21.9 km (summit of Olympus Mons).
 
 ### Terrain Traversability & Slope Constraints
-For an astronaut walking or operating a pressurized rover:
-* **Safe Traversal Slopes (< 10°–15°):** Navigable on foot and with unpressurized rovers. Energy expenditure is manageable.
-* **Challenging Slopes (15°–25°):** Heavy suit joint fatigue; high slip risk on loose sand dunes and scree slopes.
-* **Hazardous / Impassable Slopes (> 25°–30°):** Exceeds the angle of repose for dry Martian regolith (~30°–34°). Risk of avalanches, catastrophic slips, and vehicle rollovers.
-* **Obstacle Hazards:** Meter-scale boulders, ripple bedforms, hidden crevasses, and duricrust hollows that can trap rover wheels or cause astronaut trips.
+Compare the measured slope along each segment with the configured limit for the simulated traveler. Interpret loose sand, boulders, steep scarps, and unknown terrain separately. Segment-level mobility also depends on slope direction, surface material, and the traveler’s equipment. [Bagnold route and terrain checks](challenge-data-audit.md#checks-before-using-the-data-in-the-prototype)
 
 ---
 
@@ -143,20 +135,19 @@ Mars possesses **no global intrinsic dipolar magnetic field**. While localized c
   │ Origin: Outside Solar System│               │ Origin: Coronal Mass Eject. │
   │ Protons & heavy HZE ions    │               │ High-flux energetic protons │
   │ Continuous, steady baseline │               │ Sporadic, acute outbursts   │
-  │ ~0.64 mSv/day surface dose  │               │ Peak dose: hundreds mSv/hr  │
+  │ Early Gale dose equivalent │               │ Event-specific dose         │
   │ Chronic cancer & tissue risk│               │ Acute radiation sickness    │
   └─────────────────────────────┘               └─────────────────────────────┘
 ```
 
 1. **Galactic Cosmic Rays (GCR):**
    * High-energy relativistic protons and heavy atomic nuclei (HZE ions) originating from outside the solar system.
-   * **Surface Dose Rate (Curiosity RAD Data):** Measures approximately **$0.64 \pm 0.12\text{ mSv/day}$** (equivalent to ~230 mSv per year).
-   * For perspective: Earth's natural background is ~2.4–3 mSv/year; annual occupational limit for radiation workers on Earth is 20–50 mSv/year.
+   * **Early Gale dose equivalent rate.** Curiosity RAD measured about 0.64 ± 0.12 mSv/day during a GCR-dominated interval. The rate varies with solar activity and atmospheric conditions. [Early RAD results](https://doi.org/10.1126/science.1244797) · [Solar-minimum measurements](https://www.sciencedirect.com/science/article/am/pii/S0019103522001488)
    * GCR flux varies inversely with the 11-year solar cycle (solar maximum decreases GCR flux via the enhanced interplanetary magnetic field).
 2. **Solar Particle Events (SPE):**
    * Explosive solar coronal mass ejections hurling intense fluxes of 10–100+ MeV protons.
-   * An unshielded astronaut caught during a severe event could receive acute, life-threatening doses exceeding 1 to 2 Gray (1,000–2,000 mSv) in a few hours, causing Acute Radiation Sickness (ARS).
-   * **Mission Implication:** Surface mapping systems must integrate real-time space weather alerts and mark natural topographical shelters (lava tubes, canyon alcoves, habitat storm shelters).
+   * JPL reported 8,100 µGy absorbed dose for the surface event on 20 May 2024. Keep absorbed dose and dose equivalent in separate fields. [JPL event report](https://www.jpl.nasa.gov/news/nasa-watches-mars-light-up-during-epic-solar-storm/)
+   * Use a dated replay for the demo. A route-level radiation estimate requires measurements or a model that resolves the local environment and specifies shielding. [Mars SEP nowcasting study](https://doi.org/10.1029/2025SW004372)
 
 *Sources: [NASA MSL RAD Instrument Radiation Measurements (Science, 2014)](https://science.nasa.gov/mission/msl-curiosity/instruments/rad/); [NASA Human Research Program: Space Radiation](https://www.nasa.gov/hrp).*
 
@@ -184,7 +175,7 @@ Mars possesses **no global intrinsic dipolar magnetic field**. While localized c
 | Factor | Operational Constraint | Navigation / Mapping System Requirement |
 | :--- | :--- | :--- |
 | **Spacesuit Bulk & Inertia** | Spacesuits have massive inertia despite lower 0.38g weight. Joint resistance in pressurized gloves restricts fine manipulation. | High-contrast, large-button UI accessible via voice commands or glove-friendly wrist/tablet inputs. |
-| **Consumable Budget** | Nominal EVA duration is restricted to **6 to 8 hours** by $O_2$ stores, $CO_2$ scrubber capacity, cooling water reserves, and battery power. | Dynamic route planner calculating real-time metabolic burn rates and distance-to-habitat return abort thresholds. |
+| **Consumable Budget** | Duration depends on oxygen, carbon dioxide removal, cooling water, battery capacity, and reserve. | Declare the capacities and use rates as inputs for the simulation. |
 | **Communication Latency** | One-way radio propagation delay between Earth and Mars ranges from **3.1 to 22.3 minutes** (round-trip 6.2 to 44.6 minutes). | System must be **100% locally autonomous**, running onboard without requiring real-time Earth server roundtrips. |
 | **Field of View & Lighting** | Helmet visors provide restricted peripheral vision. Diffuse dust scatter creates low-contrast "flat lighting," obscuring subtle dips and rocks. | Map must provide high-contrast terrain elevation shading, slope gradient heatmaps, and hazard overlays. |
 | **Autonomous Navigation** | GPS does not exist on Mars. Autonomous positioning relies on visual odometry, celestial tracking, and inertial measurement units (IMUs). | Interface should correlate local landmarks, terrain contours, and orbital satellite basemaps. |

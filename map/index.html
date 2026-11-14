@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Namib Dune · Martian Map</title>
+  <link rel="stylesheet" href="map.css">
+  <script src="data/survey.js" defer></script>
+  <script src="data/weather.js" defer></script>
+  <script src="data/solar-storm.js" defer></script>
+  <script src="map.js" defer></script>
+  <script src="planner.js" defer></script>
+  <script src="weather.js" defer></script>
+  <script src="storm.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="masthead">
+      <div>
+        <p class="location">MARTIAN MAP <span></span> GALE CRATER</p>
+        <h1>Namib Dune</h1>
+        <p class="subtitle">Bagnold Dunes · A Marswalk around the slip face</p>
+      </div>
+      <div class="status">Marswalk planner</div>
+    </header>
+    <nav class="section-nav" aria-label="Planner sections">
+      <a href="#traverse">Traverse</a>
+      <a href="#return">Return to base</a>
+      <a href="#gobabeb">Gobabeb science</a>
+      <a href="#weather">Curiosity weather</a>
+      <a href="#solar-storm">Radiation &amp; space weather</a>
+    </nav>
+    <div class="layout" id="traverse">
+      <section class="survey" aria-label="Marswalk map and elevation profile">
+        <div class="toolbar">
+          <h2>Traverse map</h2>
+          <div class="zoom" aria-label="Map zoom">
+            <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+            <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+            <button type="button" id="reset" aria-label="Reset map view">Reset</button>
+          </div>
+        </div>
+        <div class="map-frame">
+          <svg id="map" role="img" tabindex="0" aria-label="North-up orbital map showing the proposed detour, direct comparison, and Namib Dune. Use arrow keys to pan after zooming."></svg>
+          <div class="map-key" aria-hidden="true">
+            <div class="north">↑ <strong>N</strong></div>
+            <div id="scale"><span></span><strong>25 m</strong></div>
+          </div>
+          <div id="map-readout" class="map-readout">Move across the map to inspect coordinates</div>
+        </div>
+        <section class="profile" aria-labelledby="profile-title">
+          <div class="profile-top">
+            <div>
+              <h2 id="profile-title">Elevation profile</h2>
+              <p>Elevation relative to the MOLA areoid</p>
+            </div>
+            <output id="profile-readout"></output>
+          </div>
+          <svg id="profile-chart" viewBox="0 0 800 170" role="img" aria-label="Elevation by distance along the selected route"></svg>
+          <label for="profile-position" class="sr-only">Distance along the selected route</label>
+          <input id="profile-position" type="range" min="0" max="100" value="0" step="1">
+        </section>
+      </section>
+      <aside>
+        <section class="side-panel">
+          <h2>Route comparison</h2>
+          <div class="route-controls" aria-label="Select profile route">
+            <button type="button" data-route="detour" aria-pressed="true">Detour</button>
+            <button type="button" data-route="direct" aria-pressed="false">Direct</button>
+          </div>
+          <dl class="stats">
+            <div><dt>Distance</dt><dd id="distance">—</dd></div>
+            <div><dt>Ascent</dt><dd id="ascent">—</dd></div>
+            <div><dt>Peak slope</dt><dd id="grade">—</dd></div>
+          </dl>
+          <p class="explanation" id="route-note"></p>
+        </section>
+        <section class="side-panel">
+          <h2>Layers</h2>
+          <label class="layer"><span class="swatch imagery"></span>HiRISE imagery<input type="checkbox" data-layer="imagery" checked></label>
+          <label class="layer"><span class="swatch contour"></span>2 m elevation contours<input type="checkbox" data-layer="contours" checked></label>
+          <label class="layer"><span class="swatch slope"></span>Terrain slope<input type="checkbox" data-layer="slope"></label>
+          <div class="slope-legend" id="slope-legend" hidden><span>15–20°</span> <span>20–30°</span> <span>30°+</span></div>
+          <label class="layer"><span class="swatch hazard"></span>Dune exclusion zone<input type="checkbox" data-layer="hazard" checked></label>
+          <label class="layer"><span class="swatch track"></span>Curiosity rover track<input type="checkbox" data-layer="history" checked></label>
+          <p class="coverage-note">Dark gaps at the mosaic edges show missing imagery.</p>
+        </section>
+        <section class="side-panel science">
+          <h2>Gobabeb science stop</h2>
+          <img src="data/namib-surface.webp" alt="Curiosity view of ripples and the steep downwind face of Namib Dune">
+          <p>Curiosity sampled wind-sorted sand at the dune margin on sol 1225.</p>
+          <a href="#gobabeb">Explore the observations ↓</a>
+        </section>
+      </aside>
+    </div>
+
+    <section class="detail-panel" id="return" aria-labelledby="return-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="return-title">Return to base</h2>
+          <p>Plan the round trip on the selected traverse, including time at the observation stop.</p>
+        </div>
+        <span class="data-tag" id="return-route"></span>
+      </div>
+      <form id="return-form">
+        <div class="pace-fields">
+          <label>Outbound pace <span>m/s</span><input name="outbound" type="number" min="0.05" max="5" step="0.01" value="0.70" required></label>
+          <label>Return pace <span>m/s</span><input name="inbound" type="number" min="0.05" max="5" step="0.01" value="0.60" required></label>
+          <label>Time at stop <span>min</span><input name="stop" type="number" min="0" max="1440" step="0.1" value="15" required></label>
+        </div>
+        <table class="data-table budget-table">
+          <caption>Suit endurance and reserve in Earth minutes</caption>
+          <thead><tr><th scope="col">Resource</th><th scope="col" id="available-col">At departure</th><th scope="col" id="reserve-col">Minimum reserve</th><th scope="col">At return</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" id="oxygen-label">Oxygen</th><td><input name="oxygen" aria-labelledby="oxygen-label available-col" type="number" min="0" max="1440" step="0.1" value="90" required></td><td><input name="oxygenReserve" aria-labelledby="oxygen-label reserve-col" type="number" min="0" max="1440" step="0.1" value="20" required></td><td data-balance="oxygen">—</td></tr>
+            <tr><th scope="row" id="co2-label">CO₂ removal</th><td><input name="co2" aria-labelledby="co2-label available-col" type="number" min="0" max="1440" step="0.1" value="100" required></td><td><input name="co2Reserve" aria-labelledby="co2-label reserve-col" type="number" min="0" max="1440" step="0.1" value="20" required></td><td data-balance="co2">—</td></tr>
+            <tr><th scope="row" id="battery-label">Battery</th><td><input name="battery" aria-labelledby="battery-label available-col" type="number" min="0" max="1440" step="0.1" value="110" required></td><td><input name="batteryReserve" aria-labelledby="battery-label reserve-col" type="number" min="0" max="1440" step="0.1" value="25" required></td><td data-balance="battery">—</td></tr>
+            <tr><th scope="row" id="cooling-label">Cooling water</th><td><input name="cooling" aria-labelledby="cooling-label available-col" type="number" min="0" max="1440" step="0.1" value="85" required></td><td><input name="coolingReserve" aria-labelledby="cooling-label reserve-col" type="number" min="0" max="1440" step="0.1" value="25" required></td><td data-balance="cooling">—</td></tr>
+          </tbody>
+        </table>
+        <div class="form-actions">
+          <p id="return-input-error" class="form-error" aria-live="polite"></p>
+          <button type="reset">Reset inputs</button>
+        </div>
+      </form>
+      <div id="return-results" class="planner-result">
+        <dl class="readings">
+          <div><dt>Round trip</dt><dd id="round-trip">—</dd></div>
+          <div><dt>Time margin</dt><dd id="time-margin">—</dd></div>
+          <div><dt>Limiting resource</dt><dd id="limiting-resource">—</dd></div>
+          <div><dt>Latest departure from stop</dt><dd id="latest-departure">—</dd></div>
+        </dl>
+        <p id="return-status" role="status"></p>
+        <p id="travel-breakdown" class="section-note"></p>
+      </div>
+      <p class="section-note">The calculator uses the same path in both directions. Enter average paces for the terrain and resource endurance at the planned workload. The starting values are illustrative. The model assumes constant use and accounts for delays only if you include them in the plan.</p>
+    </section>
+
+    <section class="detail-panel" id="gobabeb" aria-labelledby="gobabeb-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="gobabeb-title">Gobabeb science stop</h2>
+          <p>Examine how wind sorts the sand on the western margin of Namib Dune.</p>
+        </div>
+        <div class="data-links">
+          <a href="#traverse">View sampling area on map ↑</a>
+          <a href="#weather" id="gobabeb-weather">Weather on sampling sol ↓</a>
+        </div>
+      </div>
+      <div class="science-layout">
+        <div>
+          <figure class="science-figure">
+            <a href="data/namib-ripples.webp"><img src="data/namib-ripples.webp" width="2400" height="287" alt="Small straight ripples between larger curved ripple crests across Namib Dune" loading="lazy"></a>
+            <figcaption>Namib Dune, Mastcam, sol 1192. Trace the large, curved crests about 3 m apart, then look for smaller ripples between them. <a href="https://www.jpl.nasa.gov/images/pia20755-two-sizes-of-ripples-on-surface-of-martian-sand-dune/">NASA/JPL-Caltech/MSSS · PIA20755</a></figcaption>
+          </figure>
+          <figure class="science-figure">
+            <a href="data/namib-surface.webp"><img src="data/namib-surface.webp" width="1000" height="241" alt="Steep Namib Dune slip face seen from Curiosity" loading="lazy"></a>
+            <figcaption>Namib’s downwind slip face. Curiosity photographed sand that had moved down the steep face. <a href="https://science.nasa.gov/photojournal/slip-face-on-downwind-side-of-namib-sand-dune-on-mars/">NASA/JPL-Caltech/MSSS · PIA20281</a></figcaption>
+          </figure>
+        </div>
+        <div class="sample-results">
+          <h3>What Curiosity measured</h3>
+          <p>Curiosity scooped sand near small ripple crests. CheMin used X-ray diffraction on grains smaller than 150 µm. The four largest mineral shares below describe the crystalline portion of that sample.</p>
+          <table class="data-table mineral-table">
+            <caption>CheMin · crystalline mass fraction · ±1σ</caption>
+            <tbody>
+              <tr><th scope="row">Plagioclase</th><td><meter min="0" max="100" value="36.5" aria-label="Plagioclase crystalline mass fraction"></meter></td><td>36.5 ± 0.8%</td></tr>
+              <tr><th scope="row">Olivine</th><td><meter min="0" max="100" value="25.8" aria-label="Olivine crystalline mass fraction"></meter></td><td>25.8 ± 0.4%</td></tr>
+              <tr><th scope="row">Augite</th><td><meter min="0" max="100" value="22" aria-label="Augite crystalline mass fraction"></meter></td><td>22.0 ± 0.4%</td></tr>
+              <tr><th scope="row">Pigeonite</th><td><meter min="0" max="100" value="10.6" aria-label="Pigeonite crystalline mass fraction"></meter></td><td>10.6 ± 0.4%</td></tr>
+            </tbody>
+          </table>
+          <p>CheMin also estimated that 35 ± 15% of the whole sample was X-ray amorphous. <a href="https://doi.org/10.1002/2017JE005262">CheMin analysis, Table 1</a></p>
+          <h3>Compare the size fractions</h3>
+          <p>APXS measured 7.57 wt% magnesium oxide in the fine discard pile A (&lt;150 µm) and 11.50 wt% in coarse pile B (&gt;150 µm). The higher value in the coarse pile shows how grain size affects the chemistry measured at one site. <a href="https://doi.org/10.1002/2017JE005267">Campaign synthesis, Table 3</a></p>
+          <h3>How the dunes hold heat</h3>
+          <p>Mars Odyssey’s THEMIS instrument gave a field-wide apparent thermal inertia of 240 ± 20 J m⁻² K⁻¹ s⁻½. Models using Curiosity ground temperatures at Namib gave 170–200 in the same units. The observations cover different areas and help explain how sand heats and cools. <a href="https://doi.org/10.1029/2017JE005501">THEMIS analysis</a> · <a href="https://doi.org/10.1029/2021JE007076">Namib comparison</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-panel" id="weather" aria-labelledby="weather-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="weather-title">Historical Curiosity weather</h2>
+          <p>Explore both Bagnold campaign phases. Within-sol times use Curiosity’s local mean solar time (LMST).</p>
+        </div>
+        <span class="data-tag">Archived observations</span>
+      </div>
+      <div class="weather-controls">
+        <label for="weather-sol">Curiosity sol</label>
+        <button type="button" id="weather-previous" aria-label="Previous campaign sol" disabled>‹</button>
+        <select id="weather-sol" disabled></select>
+        <button type="button" id="weather-next" aria-label="Next campaign sol" disabled>›</button>
+        <div class="weather-metrics" role="group" aria-label="Weather chart measurement">
+          <button type="button" data-measurement="temperature" aria-pressed="true">Temperature</button>
+          <button type="button" data-measurement="pressure" aria-pressed="false">Pressure</button>
+          <button type="button" data-measurement="wind" aria-pressed="false">Wind</button>
+        </div>
+      </div>
+      <div class="weather-timeline">
+        <label for="weather-timeline">Campaign sol timeline</label>
+        <input type="range" id="weather-timeline" min="0" max="1" value="0" disabled>
+        <div class="weather-phase-labels"><span>High Dune and Namib</span><span>Nathan Bridges Dune and Mount Desert Island</span></div>
+      </div>
+      <p id="weather-sol-context" class="section-note" aria-live="polite">Loading local archive…</p>
+      <dl class="readings weather-readings" id="weather-summary"></dl>
+      <div class="weather-view" role="group" aria-label="Weather chart time scale">
+        <button type="button" data-weather-view="sol" aria-pressed="true">Within sol</button>
+        <button type="button" data-weather-view="campaign" aria-pressed="false">Campaign overview</button>
+      </div>
+      <canvas id="weather-chart" role="img" aria-describedby="weather-chart-note"></canvas>
+      <p id="weather-chart-note" class="section-note">30-minute means. Empty periods have no readings that pass the selected quality checks.</p>
+      <details id="weather-details">
+        <summary>View weather values by local time</summary>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Weather values table">
+          <table class="data-table weather-table">
+            <caption>Mean and accepted readings per 30-minute window</caption>
+            <thead><tr><th scope="col">LMST window</th><th scope="col">Air · °C</th><th scope="col">Ground · °C</th><th scope="col">Pressure · Pa</th><th scope="col">Wind · m/s</th></tr></thead>
+            <tbody id="weather-rows"></tbody>
+          </table>
+        </div>
+      </details>
+      <p class="section-note">Wind coverage is sparse. Accepted readings include preliminary archive estimates with favorable sensor flags. <a href="https://doi.org/10.1016/j.icarus.2016.12.016">Bagnold wind study</a></p>
+      <div class="data-links">
+        <a id="weather-source" href="https://atmos.nmsu.edu/PDS/data/PDS4/msl_rems_bundle/data_calibrated/SOL_01160_01293/">NASA PDS weather archive</a>
+        <a href="data/rems-weather.csv" download>Download 30-minute data</a>
+        <a href="data/rems-daily.csv" download>Download daily reports</a>
+        <a href="https://mars.nasa.gov/rss/api/?feed=weather&amp;category=msl&amp;feedtype=json">NASA daily report source</a>
+        <a href="README.md#historical-weather">Filters and data coverage</a>
+      </div>
+    </section>
+    <section class="detail-panel" id="solar-storm" aria-labelledby="storm-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="storm-title">May 2024 solar storm replay</h2>
+          <p>Compare Curiosity’s surface radiation with MAVEN’s orbital particle flux. Curiosity recorded the storm elsewhere in Gale Crater, years after its visit to Namib Dune.</p>
+        </div>
+        <span class="data-tag">19–22 May 2024 · UTC</span>
+      </div>
+      <p id="storm-unavailable" class="section-note" hidden>The bundled storm records could not be loaded.</p>
+      <div id="storm-replay" hidden>
+        <dl class="readings storm-readings">
+          <div><dt>Pre-storm surface background · May 15–19</dt><dd id="storm-background"></dd></div>
+          <div><dt>Peak surface dose rate · May 20</dt><dd id="storm-peak-rate"></dd></div>
+          <div><dt>Peak compared with background</dt><dd id="storm-peak-ratio"></dd></div>
+        </dl>
+        <div class="storm-controls" role="group" aria-label="Storm playback">
+          <button type="button" id="storm-play">Play replay</button>
+          <button type="button" id="storm-back" aria-label="Previous 30-minute window">‹</button>
+          <button type="button" id="storm-next" aria-label="Next 30-minute window">›</button>
+          <button type="button" id="storm-peak">Jump to RAD peak</button>
+        </div>
+        <div class="storm-timeline">
+          <div><label for="storm-time">Replay window</label><span id="storm-window"></span></div>
+          <input id="storm-time" type="range" min="0" max="1" step="1" value="0">
+          <div class="storm-days"><span>19 May</span><span>20 May</span><span>21 May</span><span>22 May</span></div>
+        </div>
+        <div class="storm-tracks">
+          <section aria-labelledby="storm-rad-title">
+            <div class="storm-track-heading">
+              <div><h3 id="storm-rad-title">Curiosity RAD · surface</h3><p>Detector E absorbed dose rate</p></div>
+              <div><strong id="storm-rad-value">—</strong><span id="storm-rad-count"></span></div>
+            </div>
+            <canvas id="storm-rad-chart" class="storm-chart" role="img" aria-describedby="storm-method"></canvas>
+          </section>
+          <section aria-labelledby="storm-maven-title">
+            <div class="storm-track-heading">
+              <div><h3 id="storm-maven-title">MAVEN SEP · orbit</h3><p>Forward ion flux at 2.24 MeV · sensor 1</p></div>
+              <div><strong id="storm-maven-value">—</strong><span id="storm-maven-count"></span></div>
+            </div>
+            <canvas id="storm-maven-chart" class="storm-chart" role="img" aria-describedby="storm-method"></canvas>
+          </section>
+        </div>
+        <p id="storm-method" class="section-note">The charts show 30-minute UTC means. The shaded band marks May 20. The dashed horizontal line shows the median of Curiosity’s May 15–19 readings. MAVEN gaps show where no readings pass the archive filters and instrument settings used here. The orbital track measures ion flux in one direction and energy band.</p>
+        <p id="storm-peak-note" class="section-note"></p>
+        <p id="storm-announcement" class="sr-only" role="status"></p>
+        <details class="storm-data">
+          <summary>View replay measurements</summary>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Storm measurements table">
+            <table class="data-table weather-table">
+              <caption>30-minute means and accepted sample counts</caption>
+              <thead><tr><th scope="col">Window start · UTC</th><th scope="col">RAD · µGy/day (n)</th><th scope="col">SEP · ions/(cm²·s·sr·keV) (n)</th></tr></thead>
+              <tbody id="storm-rows"></tbody>
+            </table>
+          </div>
+        </details>
+        <div class="data-links">
+          <a href="data/solar-storm.csv" download>Download replay CSV</a>
+          <a href="https://spdf.gsfc.nasa.gov/pub/data/aaa_planetary/msl/rad/cdf/obs-l2/2024/">NASA RAD data</a>
+          <a href="https://spdf.gsfc.nasa.gov/pub/data/maven/sep/l2/s1-cal-svy-full/2024/05/">NASA MAVEN SEP data</a>
+          <a href="https://www.jpl.nasa.gov/news/nasa-watches-mars-light-up-during-epic-solar-storm/">JPL event report</a>
+          <a href="README.md#solar-storm-replay">Replay data and filters</a>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <p>Terrain and imagery by USGS Astrogeology, NASA, JPL-Caltech, and the University of Arizona. Rover track from NASA PDS PLACES. Surface photo by NASA/JPL-Caltech.</p>
+      <a href="data/profile.csv" download>Download elevation data</a>
+      <a href="https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m">USGS source ↗</a>
+    </footer>
+    <noscript>This map requires JavaScript.</noscript>
+  </main>
+</body>
+</html>

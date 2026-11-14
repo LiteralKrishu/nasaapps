@@ -1,5 +1,7 @@
 # NASA Mars Data Sources, Mission Archives & Integration Guide
 
+For file names and coverage checks for the first map, see the [Bagnold Dunes product list](challenge-data-audit.md#public-products-for-the-first-map).
+
 ## 1. NASA Planetary Data Ecosystem Overview
 
 All scientific data acquired by NASA planetary missions is rigorously processed, peer-reviewed, and archived in the **Planetary Data System (PDS)**. The PDS is organized into disciplinary nodes (Geosciences, Imaging, Atmospheres, Planetary Plasma, Small Bodies). For the *Interplanetary Survival Guide: Martian Map* project, we leverage calibrated spatial and temporal datasets from active and legacy Mars exploration missions.
@@ -192,14 +194,14 @@ The NASA Space Apps Challenge explicitly highlights five foundational data porta
 
 ## 4. Multi-Layer Data Architecture for the Martian Map
 
-To satisfy the challenge requirement of integrating **at least three distinct types of data**, our system architecture integrates five specialized functional layers:
+The brief suggests at least three types of data. This design proposes five layers for the prototype. [Challenge brief](https://hackathlone.com/challenges/interplanetary-survival-guide-martian-map)
 
 | Layer Category | Source Mission & Sensor | Data Products Used | Operational Value for Astronaut |
 | :--- | :--- | :--- | :--- |
-| **Layer 1: Visual Base Map** | MRO CTX, HiRISE & Mars 2020 Raw Gallery | 6m orthomosaic & ground panoramas | High-contrast visual reference of natural features and surface morphology. |
-| **Layer 2: Topography & Slope** | MGS MOLA + MRO HiRISE DTM | 463m global DEM + 1m local DTM | Detects hazardous slopes (>15°), cliffs, boulder fields, and calculates terrain elevation profiles. |
-| **Layer 3: Thermophysical Stability** | 2001 Mars Odyssey THEMIS | Nighttime IR & Thermal Inertia | Distinguishes firm bedrock from soft sinking dust; forecasts surface temperatures. |
-| **Layer 4: Environmental / Radiation** | MSL RAD + Mars 2020 MEDA / REMS | Cumulative mSv/day dose & dust $\tau$ | Informs space weather danger zones, shelter proximity, and life-support limits. |
+| **Layer 1: Visual Base Map** | MRO CTX and HiRISE with rover imagery from the selected site | Orbital mosaics and ground panoramas | Show the orbital view and the view from designated stops. |
+| **Layer 2: Topography & Slope** | MGS MOLA and local stereo DEM | 463 m global and 1 m Gale mosaic grid | Derive slopes and elevation profiles after checking resolution, seams, and NoData. |
+| **Layer 3: Thermophysical Context** | 2001 Mars Odyssey THEMIS | Nighttime IR and apparent thermal inertia | Supports interpretation of surface materials. |
+| **Layer 4: Environment & radiation** | Curiosity RAD and REMS at Gale, or MEDA at Jezero | Dated point measurements | Show dose or dose rate with its units and interval. Display weather at the rover location and time. |
 | **Layer 5: Science Waypoints** | MRO CRISM + USGS Geologic Maps | Mineral indices (clays, sulfates, ice) | Marks high-priority scientific sampling stations along the Marswalk traverse. |
 
 ---
@@ -215,7 +217,7 @@ To satisfy the challenge requirement of integrating **at least three distinct ty
 | **Perseverance Raw Gallery** | Mars 2020 / JPL | Surface Rover Camera Imagery | Millimeter to meter POV | [Perseverance Raw Images](https://mars.nasa.gov/mars2020/multimedia/raw-images/) | Ground-level POV images for helmet visor / tablet waypoint preview. |
 | **MOLA** | Mars Global Surveyor | Laser Altimetry / DEM | 463 m/px (128 ppd) | [PDS MOLA](https://pds-geosciences.wustl.edu/missions/mgs/mola.html) | Global macro-elevation grid and regional watershed/slope modeling. |
 | **HiRISE** | Mars Reconnaissance Orbiter | High-Res Optical & DTM | 0.25–0.3 m/px (1 m DTM) | [HiRISE Ops](https://hirise.lpl.arizona.edu/) | Tactical boulder identification, micro-slopes, and crevasse avoidance. |
-| **THEMIS** | 2001 Mars Odyssey | Thermal IR & Thermal Inertia | 100 m/px | [ASU THEMIS](https://themis.asu.edu/) | Bedrock vs. soft dust discrimination; ground bearing trafficability. |
+| **THEMIS** | 2001 Mars Odyssey | Thermal IR and apparent thermal inertia | 100 m/px | [USGS quantitative mosaic](https://astrogeology.usgs.gov/search/map/mars-themis-derived-global-thermal-inertia-mosaic) | Surface material context. Mobility requires independent evidence. |
 | **CTX** | Mars Reconnaissance Orbiter | Panchromatic Context Mosaic | ~6.0 m/px | [MSSS CTX](https://www.msss.com/msss_images/subject/context_images.html) | Seamless context basemap connecting macro-DEM to micro-HiRISE. |
 | **CRISM** | Mars Reconnaissance Orbiter | Hyperspectral Mineralogy | 18–36 m/px | [CRISM JHU/APL](https://crism.jhuapl.edu/) | Hydrated mineralogy (clays/sulfates) for scientific sampling targets. |
 | **REMS & RAD** | MSL Curiosity Rover | Weather, In-Situ Radiation | In-situ point sensor | [PDS Atmospheres MSL](https://pds-atmospheres.nmsu.edu/) | Baseline surface GCR/SPE radiation measurements and microclimate. |
