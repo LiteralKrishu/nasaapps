@@ -16,6 +16,9 @@ from rasterio.warp import reproject, Resampling
 from rasterio.windows import Window, from_bounds
 from scipy.ndimage import distance_transform_edt, gaussian_filter, map_coordinates
 
+# JSON data modules imported by the Next.js components.
+DATA_MODULES = Path(__file__).resolve().parents[1] / "lib" / "data"
+
 WEST, NORTH = 8142270, -277285
 WIDTH, HEIGHT = 290, 195
 METRES_PER_DEGREE = 3396190 * math.pi / 180
@@ -176,7 +179,7 @@ def main():
     parser.add_argument("--ortho", required=True, help=f"Local TIFF crop or {ORTHO_URL}")
     parser.add_argument("--places", required=True, help=f"Local PLACES CSV from {PLACES_URL}")
     parser.add_argument("--photo", required=True, help=f"Local PIA20281 JPEG from {PHOTO_URL}")
-    parser.add_argument("--output", type=Path, default=ROOT / "map" / "data")
+    parser.add_argument("--output", type=Path, default=ROOT / "public" / "data")
     args = parser.parse_args()
 
     elevation = align(args.dem, 1, -32767, "float32")
@@ -222,6 +225,7 @@ def main():
     }
 
     args.output.mkdir(parents=True, exist_ok=True)
+    DATA_MODULES.mkdir(parents=True, exist_ok=True)
     write_geotiff(args.output / "elevation.tif", elevation, 1, -32767)
     write_geotiff(args.output / "orthophoto.tif", optical, 0.25, 0)
     grayscale = ImageOps.autocontrast(Image.fromarray(optical), cutoff=(1, 1))
@@ -241,7 +245,8 @@ def main():
         for name, route in data["routes"].items():
             writer.writerows((name, d, round(WEST + x, 2), round(NORTH - y, 2), z)
                              for d, x, y, z in route["profile"])
-    (args.output / "survey.js").write_text("window.marsSurvey = " + json.dumps(data, separators=(",", ":")) + ";\n")
+    (DATA_MODULES / "survey.json").write_text(
+        json.dumps(data, separators=(",", ":")) + "\n")
     print(json.dumps({"checks": data["checks"], "routes": {
         name: {key: value for key, value in route.items() if key not in ("path", "profile")}
         for name, route in data["routes"].items()}}, indent=2))

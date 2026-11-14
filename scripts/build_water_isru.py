@@ -10,6 +10,9 @@ from PIL import Image
 import rasterio
 from rasterio.windows import Window
 
+# JSON data modules imported by the Next.js components.
+DATA_MODULES = Path(__file__).resolve().parents[1] / "lib" / "data"
+
 
 ROOT = Path(__file__).resolve().parents[1]
 GOBABEB_SAMPLE = "4549.1"
@@ -76,22 +79,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("dan", type=Path, help="Zenodo DAN_Pixelization_Table_sol_3333.csv")
     parser.add_argument("swim", type=Path, help="Directory with the three SWIM4MIM GeoTIFFs")
-    parser.add_argument("--output", type=Path, default=ROOT / "map" / "data")
+    parser.add_argument("--output", type=Path, default=ROOT / "public" / "data")
     args = parser.parse_args()
-    survey_text = (ROOT / "map" / "data" / "survey.js").read_text(encoding="utf-8")
-    survey = json.loads(survey_text.partition("=")[2].strip().removesuffix(";"))
+    survey = json.loads((DATA_MODULES / "survey.json").read_text(encoding="utf-8"))
     points = read_dan(args.dan, survey)
     sample = next(point for point in points if point["id"] == GOBABEB_SAMPLE and point["mode"] == "Active")
     x, y = (sample[key] * survey["metresPerDegree"] for key in ("lon", "lat"))
 
     args.output.mkdir(parents=True, exist_ok=True)
+    DATA_MODULES.mkdir(parents=True, exist_ok=True)
     swim = {}
     for depth, (filename, threshold) in SWIM_FILES.items():
         swim[depth] = swim_map(args.swim / filename, x, y, args.output / f"swim-{depth}.png")
         swim[depth]["threshold"] = threshold
     data = {"gobabebSample": sample["id"], "dan": points, "swim": swim}
-    (args.output / "water-isru.js").write_text(
-        "window.marsWater = " + json.dumps(data, separators=(",", ":"), allow_nan=False) + ";\n", encoding="utf-8"
+    (DATA_MODULES / "water-isru.json").write_text(
+        json.dumps(data, separators=(",", ":"), allow_nan=False) + "\n", encoding="utf-8"
     )
     fields = ["id", "mode", "lon", "lat", "weh", "uncertainty", "material"]
     with (args.output / "dan-namib.csv").open("w", encoding="utf-8", newline="") as stream:

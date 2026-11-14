@@ -8,6 +8,9 @@ import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+# JSON data modules imported by the Next.js components.
+DATA_MODULES = Path(__file__).resolve().parents[1] / "lib" / "data"
+
 PHASES = ((1162, 1254), (1602, 1660))
 BIN_MINUTES = 30
 BINS_PER_SOL = 24 * 60 // BIN_MINUTES
@@ -126,7 +129,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path, help="Directory with PDS4 XML labels and original MODRDR TAB files")
     parser.add_argument("--daily", type=Path, required=True, help=f"NASA REMS daily archive JSON from {DAILY_SOURCE}")
-    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "map" / "data")
+    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "public" / "data")
     args = parser.parse_args()
     daily = read_daily(args.daily)
     products = {}
@@ -155,6 +158,7 @@ def main():
         "dailySource": DAILY_SOURCE, "phases": PHASES, "binMinutes": BIN_MINUTES, "sols": sols,
     }
     args.output.mkdir(parents=True, exist_ok=True)
+    DATA_MODULES.mkdir(parents=True, exist_ok=True)
     with (args.output / "rems-weather.csv").open("w", newline="", encoding="utf-8") as output:
         writer = csv.writer(output)
         writer.writerow(
@@ -165,8 +169,8 @@ def main():
             for i, row in enumerate(sol["bins"]):
                 hour, minute = divmod(i * BIN_MINUTES, 60)
                 writer.writerow([sol["sol"], f"{hour:02d}:{minute:02d}", sol["product"], *(v for pair in row for v in pair)])
-    (args.output / "weather.js").write_text(
-        "window.curiosityWeather = " + json.dumps(data, separators=(",", ":"), allow_nan=False) + ";\n",
+    (DATA_MODULES / "weather.json").write_text(
+        json.dumps(data, separators=(",", ":"), allow_nan=False) + "\n",
         encoding="utf-8",
     )
     with (args.output / "rems-daily.csv").open("w", newline="", encoding="utf-8") as output:
