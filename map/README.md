@@ -59,6 +59,24 @@ The importer assigns observations to windows by source timestamp. Each mean uses
 
 Install `numpy` and `cdflib` to rebuild the replay. Download the daily CDFs listed in `scripts/build_storm_replay.py` and place them in one directory. Run `python3 scripts/build_storm_replay.py /path/to/products` from the project root.
 
+## Water ice and resources
+
+The **Regional ice & MOXIE** view uses the three SWIM4MIM composite GeoTIFFs for depths of 0–1 m, 1–5 m, and more than 5 m. The maps cover 60° S to 60° N. The original rasters have 20 pixels per degree, or about 3 km per cell at the equator. The offline images use nearest-neighbor sampling at 4 pixels per degree, over a Mars Trek MOLA basemap. [SWIM products](https://swim.psi.edu/SWIM4MIMProducts.php) · [Mars Trek tiles](https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars)
+
+Blue marks cells that meet the study’s ice-consistency thresholds of 0.30, 0.40, and 0.50 for the three depth intervals. Lighter blue indicates a higher score. Gray indicates a score below the threshold. Hatching indicates no mapped value. The site readout samples the original GeoTIFF cells at the marker coordinates. Arcadia and Utopia represent selected points in their respective plains. A score describes evidence consistent with buried ice. Establishing local ice concentration or extraction yield requires site measurements. [SWIM study](https://doi.org/10.3847/PSJ/ad9b24) · [Arcadia coordinates](https://planetarynames.wr.usgs.gov/Feature/348) · [Utopia coordinates](https://planetarynames.wr.usgs.gov/Feature/6260)
+
+MOXIE tested solid-oxide electrolysis using atmospheric carbon dioxide at Jezero. The panel shows the measured production results and the instrument photograph. [NASA/JPL results](https://www.jpl.nasa.gov/news/nasas-oxygen-generating-experiment-moxie-completes-mars-mission/) · [NASA Photojournal PIA24203](https://science.nasa.gov/photojournal/moxie-all-tucked-in/)
+
+To regenerate the resource view, place the original SWIM GeoTIFFs, Mars Trek’s two level-zero color-hillshade JPEGs (`mola-0.jpg` and `mola-1.jpg` in west-to-east order), and NASA photo PIA24203 (`moxie.jpg`) in one directory. Run `python3 scripts/build_swim_resources.py /path/to/products` from the project root. The script uses Rasterio, NumPy, and Pillow.
+
+## Water and ISRU
+
+The DAN layer shows 20 active and 203 passive records whose centers fall in the Namib map. The derived archive gives each record a water-equivalent hydrogen (WEH) estimate and statistical uncertainty. It models the upper ~60 cm as a uniform layer and groups results into about 3 m cells along the rover path. The display projects the published coordinates into the same Mars grid as the terrain map. It displays centers and leaves areas between samples blank. The active sand record 4549.1 near Gobabeb has **0.78 ± 0.06 wt% WEH**. WEH measures hydrogen expressed as an equivalent mass of water. It can include hydrogen bound in minerals. The estimate gives no recovery yield. [DAN derived table](https://zenodo.org/records/6974535) · [DAN methods](https://doi.org/10.1029/2022JE007327) · [Gobabeb sand study](https://pmc.ncbi.nlm.nih.gov/articles/PMC5815393/)
+
+The regional view uses the SWIM4MIM composite GeoTIFFs. Each crop shows 61 × 49 original grid cells, each about 2.96 km wide at the equator. All three maps use the same color scale. The marker uses the coordinates of DAN record 4549.1 and the readout uses the original cell that contains that point. The ice-consistency scores for 0–1 m, 1–5 m, and below 5 m are +0.08646, +0.21429, and 0.00. All are below the study’s thresholds for high ice consistency (+0.30, +0.40, +0.50). The composites have valid cells at Namib in these three layers. NoData is a separate category. The 2023 NASA northern map covers 0–60° N, which excludes Gale. Later composites cover Gale, but orbital evidence near the equator remains inconclusive. [SWIM products](https://swim.psi.edu/SWIM4MIMProducts.php) · [Threshold study](https://doi.org/10.3847/PSJ/ad9b24) · [NASA 2023 map](https://science.nasa.gov/resource/swim-map-shows-subsurface-water-ice-on-mars/) · [Equatorial uncertainty study](https://doi.org/10.3847/PSJ/ae8904)
+
+Install NumPy, Pillow, and Rasterio to rebuild the panel’s data and maps. Download the [DAN table](https://zenodo.org/records/6974535/files/DAN_Pixelization_Table_sol_3333.csv?download=1) and the three SWIM GeoTIFFs linked in the products list. Run `python3 scripts/build_water_isru.py /path/to/DAN_Pixelization_Table_sol_3333.csv /path/to/swim` from the project root.
+
 ## Rebuild
 
 The builder uses Python with `numpy`, `scipy`, `rasterio`, `contourpy`, and `Pillow`. Use the aligned GeoTIFFs in this folder or the original v3 mosaics. Supply the PLACES CSV and PIA20281 JPEG from the source list. The script’s help contains their direct URLs.

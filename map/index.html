@@ -8,10 +8,14 @@
   <script src="data/survey.js" defer></script>
   <script src="data/weather.js" defer></script>
   <script src="data/solar-storm.js" defer></script>
+  <script src="data/water-isru.js" defer></script>
+  <script src="data/swim-resources.js" defer></script>
   <script src="map.js" defer></script>
   <script src="planner.js" defer></script>
   <script src="weather.js" defer></script>
   <script src="storm.js" defer></script>
+  <script src="water.js" defer></script>
+  <script src="resources.js" defer></script>
 </head>
 <body>
   <main>
@@ -29,6 +33,8 @@
       <a href="#gobabeb">Gobabeb science</a>
       <a href="#weather">Curiosity weather</a>
       <a href="#solar-storm">Radiation &amp; space weather</a>
+      <a href="#water">Water &amp; ISRU</a>
+      <a href="#resource-exploration">Regional ice &amp; MOXIE</a>
     </nav>
     <div class="layout" id="traverse">
       <section class="survey" aria-label="Marswalk map and elevation profile">
@@ -83,6 +89,8 @@
           <div class="slope-legend" id="slope-legend" hidden><span>15–20°</span> <span>20–30°</span> <span>30°+</span></div>
           <label class="layer"><span class="swatch hazard"></span>Dune exclusion zone<input type="checkbox" data-layer="hazard" checked></label>
           <label class="layer"><span class="swatch track"></span>Curiosity rover track<input type="checkbox" data-layer="history" checked></label>
+          <label class="layer"><span class="swatch dan"></span>Curiosity DAN samples<input type="checkbox" data-layer="dan" disabled></label>
+          <p class="coverage-note"><a href="#water">Water evidence and coverage ↓</a></p>
           <p class="coverage-note">Dark gaps at the mosaic edges show missing imagery.</p>
         </section>
         <section class="side-panel science">
@@ -293,6 +301,145 @@
           <a href="README.md#solar-storm-replay">Replay data and filters</a>
         </div>
       </div>
+    </section>
+    <section class="detail-panel" id="resource-exploration" aria-labelledby="resources-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="resources-title">Water ice &amp; resources</h2>
+          <p>Explore regional evidence for buried water ice and results from Perseverance’s oxygen production experiment.</p>
+        </div>
+      </div>
+      <h3>Regional ice evidence</h3>
+      <p id="swim-unavailable" class="section-note" hidden>The bundled SWIM maps could not be loaded.</p>
+      <div id="swim-explorer" hidden>
+        <div id="swim-depths" class="resource-controls" role="group" aria-label="Subsurface depth"></div>
+        <div class="swim-map-frame">
+          <img id="swim-map" width="1440" height="480" alt="SWIM regional ice evidence on Mars from 60° S to 60° N">
+          <div id="swim-markers" aria-label="Site markers"></div>
+        </div>
+        <p id="swim-image-error" class="section-note" hidden>The selected map image could not be loaded.</p>
+        <ul class="swim-legend" aria-label="Ice evidence map legend">
+          <li><span class="swim-below"></span>Below study threshold</li>
+          <li><span class="swim-strong"></span><span id="swim-threshold"></span></li>
+          <li><span class="swim-missing"></span>No mapped value</li>
+        </ul>
+        <div class="swim-inspect">
+          <div>
+            <label for="swim-resource-site">Inspect a location</label>
+            <select id="swim-resource-site"></select>
+            <p id="swim-coordinates" class="section-note"></p>
+          </div>
+          <div class="swim-readout" role="status">
+            <strong id="swim-score"></strong>
+            <span id="swim-result"></span>
+          </div>
+        </div>
+        <details class="storm-data">
+          <summary>Compare evidence across all depths</summary>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="SWIM site comparison table">
+            <table class="data-table swim-table">
+              <caption>SWIM ice-consistency scores at the selected locations</caption>
+              <thead id="swim-table-head"></thead>
+              <tbody id="swim-table-body"></tbody>
+            </table>
+          </div>
+        </details>
+        <p class="section-note">The SWIM score combines measurements that are more or less consistent with buried ice. The original cells are about 3 km wide at the equator. Ice presence, concentration, and extraction feasibility at a specific site require local evidence.</p>
+        <div class="data-links">
+          <a id="swim-source" href="https://swim.psi.edu/SWIM4MIMProducts.php">Original SWIM GeoTIFF</a>
+          <a href="https://doi.org/10.3847/PSJ/ad9b24">Study and evidence thresholds</a>
+          <a href="README.md#water-ice-and-resources">Map and site methods</a>
+          <a href="#water">Local water evidence at Namib ↓</a>
+        </div>
+      </div>
+      <article class="moxie-panel" aria-labelledby="moxie-title">
+        <figure class="science-figure">
+          <img src="data/moxie.webp" width="1000" height="750" alt="Gold-colored MOXIE instrument installed inside Perseverance" loading="lazy">
+          <figcaption>MOXIE installed in Perseverance. <a href="https://science.nasa.gov/photojournal/moxie-all-tucked-in/">NASA/JPL-Caltech · PIA24203</a></figcaption>
+        </figure>
+        <div>
+          <h3 id="moxie-title">MOXIE oxygen production</h3>
+          <p>At Jezero Crater, Perseverance’s Mars Oxygen In-Situ Resource Utilization Experiment used solid-oxide electrolysis to split atmospheric carbon dioxide and produce oxygen.</p>
+          <dl class="readings moxie-readings">
+            <div><dt>Total oxygen</dt><dd>122 g</dd></div>
+            <div><dt>Production runs</dt><dd>16</dd></div>
+            <div><dt>Peak output rate</dt><dd>12 g/h</dd></div>
+            <div><dt>Oxygen purity at peak</dt><dd>≥98%</dd></div>
+          </dl>
+          <p class="section-note">MOXIE made 9.8 g on its final run on August 7, 2023. The experiment used atmospheric CO₂ and vented the oxygen after measuring its purity.</p>
+          <a href="https://www.jpl.nasa.gov/news/nasas-oxygen-generating-experiment-moxie-completes-mars-mission/">NASA/JPL mission results</a>
+        </div>
+      </article>
+    </section>
+    <section class="detail-panel" id="water" aria-labelledby="water-title">
+      <div class="detail-heading">
+        <div>
+          <h2 id="water-title">Water &amp; ISRU</h2>
+          <p>Compare Curiosity’s shallow hydrogen readings with NASA’s regional ice maps. In-situ resource utilization (ISRU) means using materials available at the site.</p>
+        </div>
+      </div>
+      <p id="water-unavailable" class="section-note">The bundled water data could not be loaded.</p>
+      <div id="water-evidence" class="water-evidence" hidden>
+        <section class="water-source" aria-labelledby="dan-title">
+          <h3 id="dan-title">Curiosity DAN · Namib traverse</h3>
+          <p class="section-note">DAN uses neutrons to estimate hydrogen in the upper ~60 cm. Water-equivalent hydrogen (WEH) expresses that hydrogen as a water mass fraction. The signal can include hydrogen bound in minerals.</p>
+          <dl class="readings water-readings">
+            <div><dt>Gobabeb-area sand · active sample</dt><dd id="dan-gobabeb"></dd></div>
+            <div><dt>Records within the Namib map</dt><dd id="dan-coverage"></dd></div>
+          </dl>
+          <div class="water-actions">
+            <button id="dan-show-on-map" type="button">Show DAN samples on map ↑</button>
+            <span class="section-note">Circles show active samples. Squares show passive samples.</span>
+          </div>
+          <label for="dan-point">Inspect a DAN record</label>
+          <select id="dan-point"></select>
+          <p id="dan-reading" class="section-note" role="status"></p>
+          <p class="section-note">DAN records follow the rover’s path. Unmarked areas have no mapped estimate in this dataset. Deeper layers are beyond DAN’s sensing depth.</p>
+          <p class="section-note">Across Curiosity’s broader Gale traverse through sol 3333, DAN estimates ranged from near zero to 6.1 ± 0.7 wt% WEH. At Gobabeb, heating sand in the rover’s SAM instrument released water at temperatures consistent with hydrogen bound in minerals.</p>
+          <div class="data-links">
+            <a href="data/dan-namib.csv" download>Download local DAN estimates</a>
+            <a href="https://zenodo.org/records/6974535">DAN derived data</a>
+            <a href="https://doi.org/10.1029/2022JE007327">Gale traverse study</a>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5815393/">Gobabeb sand study</a>
+            <a href="https://pds-geosciences.wustl.edu/missions/msl/dan.htm">NASA DAN archive</a>
+          </div>
+        </section>
+        <section class="water-source" aria-labelledby="swim-title">
+          <h3 id="swim-title">NASA SWIM · Gale Crater region</h3>
+          <p class="section-note">Subsurface Water Ice Mapping combines orbital evidence at ~3 km per cell. The marker shows Namib’s location within the larger Gale region.</p>
+          <div class="water-actions" role="group" aria-label="SWIM depth">
+            <button type="button" data-swim-depth="shallow" aria-pressed="true">0–1 m</button>
+            <button type="button" data-swim-depth="middle" aria-pressed="false">1–5 m</button>
+            <button type="button" data-swim-depth="deep" aria-pressed="false">Below 5 m</button>
+          </div>
+          <figure class="water-figure">
+            <div class="water-map">
+              <img id="swim-image" src="data/swim-shallow.png" alt="Regional SWIM ice consistency grid around Gale Crater">
+              <span id="swim-site" class="water-site" aria-hidden="true"><span>Namib</span></span>
+            </div>
+            <figcaption class="water-key">
+              <span><i class="swim-scale"></i>−1 against ice · 0 neutral · +1 supports ice</span>
+              <span><i class="swim-nodata"></i>No data</span>
+            </figcaption>
+          </figure>
+          <p id="swim-reading" class="water-score" role="status"></p>
+          <p class="section-note">Scores describe agreement with buried ice. A neutral score leaves the question open. NASA’s 2023 northern map ends at the equator. These later composites cover Gale at 4.68° S, where orbital data still leave the presence of ice uncertain.</p>
+          <div class="data-links">
+            <a href="https://swim.psi.edu/SWIM4MIMProducts.php">SWIM depth maps</a>
+            <a href="https://science.nasa.gov/resource/swim-map-shows-subsurface-water-ice-on-mars/">NASA 2023 map</a>
+            <a href="https://www.usgs.gov/publications/subsurface-water-ice-mapping-mars-a-probabilistic-approach">Equatorial uncertainty study</a>
+          </div>
+        </section>
+      </div>
+      <section class="water-planning" aria-labelledby="water-planning-title">
+        <h3 id="water-planning-title">ISRU planning</h3>
+        <p class="section-note"><strong>Recoverable water at Namib remains unverified.</strong> Estimating a supply requires samples that identify the form of the water, the deposit’s depth and extent, and a test that measures extraction yield, energy use, and water quality.</p>
+        <div class="data-links">
+          <a href="README.md#water-and-isru">Data and methods</a>
+          <a href="#resource-exploration">Compare regional ice evidence ↑</a>
+          <a href="#moxie-title">MOXIE oxygen results ↑</a>
+        </div>
+      </section>
     </section>
     <footer>
       <p>Terrain and imagery by USGS Astrogeology, NASA, JPL-Caltech, and the University of Arizona. Rover track from NASA PDS PLACES. Surface photo by NASA/JPL-Caltech.</p>
