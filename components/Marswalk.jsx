@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { flushSync } from "react-dom";
 import water from "@/lib/data/water-isru.json";
 import survey from "@/lib/data/survey.json";
 import readiness from "@/lib/data/readiness.json";
@@ -19,6 +20,8 @@ import SectionNav from "./SectionNav";
 const placeholder = id => function Loading() {
   return <section id={id} className="lazy-placeholder" aria-busy="true" aria-label="Loading section" />;
 };
+// GSAP choreography loads right after hydration so it stays off the critical path.
+const Motion = dynamic(() => import("./Motion"), { ssr: false });
 const WeatherSection = dynamic(() => import("./WeatherSection"), { ssr: false, loading: placeholder("weather") });
 const StormSection = dynamic(() => import("./StormSection"), { ssr: false, loading: placeholder("solar-storm") });
 const ResourcesSection = dynamic(() => import("./ResourcesSection"), { ssr: false, loading: placeholder("resource-exploration") });
@@ -51,6 +54,7 @@ export default function Marswalk() {
   const [plannerInputs, setPlannerInputs] = useState(PLAN_DEFAULTS.inputs);
   const [storm, setStorm] = useState(PLAN_DEFAULTS.storm);
   const [urlLoaded, setUrlLoaded] = useState(false);
+  const [mapMode, setMapMode] = useState("2d");
 
   // Restore a shared plan from the address once on load, then keep the address in sync.
   useEffect(() => {
@@ -94,7 +98,11 @@ export default function Marswalk() {
   const setLayer = useCallback((name, visible) => setLayers(current => ({ ...current, [name]: visible })), []);
 
   const showDanOnMap = useCallback(() => {
-    setLayer("dan", true);
+    // DAN samples live on the 2D map; switch back to it before focusing.
+    flushSync(() => {
+      setMapMode("2d");
+      setLayer("dan", true);
+    });
     mapRef.current?.focus({ preventScroll: true });
     mapRef.current?.scrollIntoView({ block: "center" });
   }, [setLayer]);
@@ -106,6 +114,7 @@ export default function Marswalk() {
 
   return (
     <main id="top">
+      <Motion />
       <Hero />
       <SectionNav items={NAV} />
 
@@ -118,6 +127,8 @@ export default function Marswalk() {
         </div>
         <TraverseSection
           mapRef={mapRef}
+          mapMode={mapMode}
+          onMapModeChange={setMapMode}
           routeName={routeName}
           onRouteChange={setRouteName}
           layers={layers}

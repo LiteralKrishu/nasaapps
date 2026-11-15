@@ -13,11 +13,11 @@ An astronaut at Gale Crater is 3 to 22 minutes from Mission Control, one way. Be
 
 ## What the planner does
 
-It brings data from Curiosity, the Mars Reconnaissance Orbiter, MAVEN, InSight, Perseverance and the SWIM ice maps together on one page. That page walks an astronaut through a Marswalk around Namib Dune, from route choice to a final go / no-go decision.
+It opens on a 3D Mars that spins to Gale Crater and dives toward the landing site as you scroll. It brings data from Curiosity, the Mars Reconnaissance Orbiter, MAVEN, InSight, Perseverance and the SWIM ice maps together on one page. That page walks an astronaut through a Marswalk around Namib Dune, from route choice to a final go / no-go decision.
 
 | Step | What you do | NASA data |
 | --- | --- | --- |
-| 01 · [Choose a route](components/TraverseSection.jsx) | Compare a detour that clears the dune with the direct line, on a zoomable map with slope, contours, Curiosity’s track and DAN samples, plus an elevation profile. | HiRISE 1 m DEM & orthophoto, PDS PLACES rover track, DAN |
+| 01 · [Choose a route](components/TraverseSection.jsx) | Compare a detour that clears the dune with the direct line, on a zoomable map with slope, contours, Curiosity’s track and DAN samples, plus an elevation profile. Switch to **3D terrain** to orbit the dune and “walk the route” with the camera. | HiRISE 1 m DEM & orthophoto, PDS PLACES rover track, DAN |
 | 02 · [Return to base](components/ReturnPlanner.jsx) | Enter walking paces, time at the stop, delays and suit consumables. See margin, the limiting resource, the latest departure and a trip timeline. | Route geometry from step 01 |
 | 03 · [Go / no-go](components/ReadinessPanel.jsx) | Get one verdict from five checks: terrain, suit budget, weather on the chosen sol, radiation (with a solar-storm alert) and marsquakes. Share the plan as a link. | REMS, RAD, InSight catalog |
 | 04 · [Gobabeb science](components/GobabebSection.jsx) | Explore what Curiosity learned from the dune sand it sampled. | Mastcam, CheMin, APXS |
@@ -56,6 +56,7 @@ Then open http://localhost:3000.
 | `npm test` | Vitest unit tests for the return planner, readiness checks and plan links |
 | `npm run lint` | ESLint with the Next.js Core Web Vitals rules |
 | `npm run data:readiness` | Rebuilds the compact readiness summary after the Python builders refresh the data |
+| `npm run data:terrain` | Rebuilds the 3D heightmap (`public/data/terrain.bin`) from `elevation.tif` |
 
 ### Deploy
 
@@ -74,7 +75,7 @@ The app is a standard Next.js project and deploys to [Vercel](https://vercel.com
 
 ### Built with
 
-Next.js 16, React 19, plain CSS, SVG and Canvas. There is no map or chart library: every layer and chart is drawn from the bundled NASA data. Heavy sections load on demand, so the first page load carries only the route, planner and readiness data.
+Next.js 16, React 19, plain CSS, SVG and Canvas, with [three.js](https://threejs.org) for the 3D globe and terrain and [GSAP](https://gsap.com) for the intro, scroll and readiness motion. There is no map or chart library: every layer and chart is drawn from the bundled NASA data. three.js, GSAP and the heavy sections load on demand, so the first page load carries only the route, planner and readiness data. All motion turns off under the reduced-motion setting.
 
 ## 📌 Challenge Information
 
