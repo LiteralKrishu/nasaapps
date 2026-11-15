@@ -1,4 +1,4 @@
-# Namib Dune · Marswalk planner
+# Gale Atlas
 
 **Plan the first human Marswalk to an active dune on Mars, then make the go / no-go call.**
 

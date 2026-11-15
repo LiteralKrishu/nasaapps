@@ -7,6 +7,7 @@ import water from "@/lib/data/water-isru.json";
 import survey from "@/lib/data/survey.json";
 import readiness from "@/lib/data/readiness.json";
 import { decodePlan, encodePlan, PLAN_DEFAULTS } from "@/lib/share";
+import { SITE_NAME } from "@/lib/site";
 import TraverseSection from "./TraverseSection";
 import ReturnPlanner from "./ReturnPlanner";
 import GobabebSection from "./GobabebSection";
@@ -115,7 +116,7 @@ export default function Marswalk() {
       <a className="skip-link" href="#traverse">Skip to route planning</a>
       <div className="site-header">
         <div className="site-header-inner page-width">
-          <a href="#top" className="wordmark"><span className="wordmark-icon" aria-hidden="true" />Marswalk</a>
+          <a href="#top" className="wordmark"><span className="wordmark-icon" aria-hidden="true" />{SITE_NAME}</a>
           <span className="site-credit">NASA Space Apps Challenge 2026</span>
         </div>
       </div>
@@ -165,7 +166,7 @@ export default function Marswalk() {
 
       <footer className="site-footer page-width">
         <div>
-          <p className="footer-title">Marswalk planner · NASA Space Apps Challenge 2026</p>
+          <p className="footer-title">{SITE_NAME} · NASA Space Apps Challenge 2026</p>
           <p>Terrain and imagery by USGS Astrogeology, NASA, JPL-Caltech, and the University of Arizona. Rover track from NASA PDS PLACES. Weather from Curiosity REMS, radiation from Curiosity RAD and MAVEN SEP, water evidence from Curiosity DAN and SWIM, seismic events from InSight. Surface photos by NASA/JPL-Caltech.</p>
         </div>
         <div className="data-links">
