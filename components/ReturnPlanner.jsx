@@ -22,6 +22,7 @@ export default function ReturnPlanner({ routeName, inputs, onInputsChange }) {
     <section className="detail-panel" id="return" aria-labelledby="return-title">
       <div className="detail-heading">
         <div>
+          <span className="section-step">Step 2 of 3</span>
           <h2 id="return-title">Return to base</h2>
           <p>Plan the round trip on the selected traverse and see how much time you have for science and delays.</p>
         </div>
@@ -29,51 +30,53 @@ export default function ReturnPlanner({ routeName, inputs, onInputsChange }) {
           {`${routeName === "direct" ? "Direct comparison" : "Namib detour"} · ${(route.distance * 2).toFixed(1)} m`}
         </span>
       </div>
-      <form
-        onSubmit={event => event.preventDefault()}
-        onReset={event => { event.preventDefault(); onInputsChange(DEFAULTS); }}
-      >
-        <div className="pace-fields">
-          {PACE_FIELDS.map(({ name, label, unit }) => (
-            <label key={name}>{label} <span>{unit}</span><input {...field(name)} /></label>
-          ))}
-        </div>
-        <table className="data-table budget-table">
-          <caption>Suit endurance and reserve in Earth minutes</caption>
-          <thead>
-            <tr>
-              <th scope="col">Resource</th>
-              <th scope="col" id="available-col">At departure</th>
-              <th scope="col" id="reserve-col">Minimum reserve</th>
-              <th scope="col">At return</th>
-            </tr>
-          </thead>
-          <tbody>
-            {RESOURCES.map(({ name, label }) => (
-              <tr key={name}>
-                <th scope="row" id={`${name}-label`}>{label}</th>
-                <td><input {...field(name)} aria-labelledby={`${name}-label available-col`} /></td>
-                <td><input {...field(name + "Reserve")} aria-labelledby={`${name}-label reserve-col`} /></td>
-                <td data-result={result?.balances[name].result}>{result ? result.balances[name].text : "—"}</td>
-              </tr>
+      <div className="return-layout">
+        <form
+          onSubmit={event => event.preventDefault()}
+          onReset={event => { event.preventDefault(); onInputsChange(DEFAULTS); }}
+        >
+          <div className="pace-fields">
+            {PACE_FIELDS.map(({ name, label, unit }) => (
+              <label key={name}>{label} <span>{unit}</span><input {...field(name)} /></label>
             ))}
-          </tbody>
-        </table>
-        <div className="form-actions">
-          <p className="form-error" aria-live="polite">
-            {valid ? "" : "Enter valid values in the marked fields to calculate the return budget."}
-          </p>
-          <button type="reset">Reset inputs</button>
+          </div>
+          <table className="data-table budget-table">
+            <caption>Suit endurance and reserve in Earth minutes</caption>
+            <thead>
+              <tr>
+                <th scope="col">Resource</th>
+                <th scope="col" id="available-col">At departure</th>
+                <th scope="col" id="reserve-col">Minimum reserve</th>
+                <th scope="col">At return</th>
+              </tr>
+            </thead>
+            <tbody>
+              {RESOURCES.map(({ name, label }) => (
+                <tr key={name}>
+                  <th scope="row" id={`${name}-label`}>{label}</th>
+                  <td><input {...field(name)} aria-labelledby={`${name}-label available-col`} /></td>
+                  <td><input {...field(name + "Reserve")} aria-labelledby={`${name}-label reserve-col`} /></td>
+                  <td data-result={result?.balances[name].result}>{result ? result.balances[name].text : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="form-actions">
+            <p className="form-error" aria-live="polite">
+              {valid ? "" : "Enter valid values in the marked fields to calculate the return budget."}
+            </p>
+            <button type="reset">Reset inputs</button>
+          </div>
+        </form>
+        <div className="planner-result" data-result={result ? result.result : "pending"}>
+          <dl className="readings">
+            <div><dt>Round trip</dt><dd>{result ? minutes(result.elapsed) : "—"}</dd></div>
+            <div><dt>Time margin</dt><dd>{result ? minutes(result.margin) : "—"}</dd></div>
+            <div><dt>Limiting resource</dt><dd>{result ? result.limitLabel : "—"}</dd></div>
+            <div><dt>Latest departure from stop</dt><dd>{result ? result.latestDeparture : "—"}</dd></div>
+          </dl>
+          <p id="return-status" role="status">{result?.status ?? ""}</p>
         </div>
-      </form>
-      <div className="planner-result" data-result={result ? result.result : "pending"}>
-        <dl className="readings">
-          <div><dt>Round trip</dt><dd>{result ? minutes(result.elapsed) : "—"}</dd></div>
-          <div><dt>Time margin</dt><dd>{result ? minutes(result.margin) : "—"}</dd></div>
-          <div><dt>Limiting resource</dt><dd>{result ? result.limitLabel : "—"}</dd></div>
-          <div><dt>Latest departure from stop</dt><dd>{result ? result.latestDeparture : "—"}</dd></div>
-        </dl>
-        <p id="return-status" role="status">{result?.status ?? ""}</p>
       </div>
       <section id="return-timeline" className="return-timeline" aria-labelledby="return-timeline-title" hidden={!result}>
         <h3 id="return-timeline-title">Trip timeline</h3>
