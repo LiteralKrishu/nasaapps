@@ -1,11 +1,11 @@
-# Namib Dune · Marswalk planner
+# Gale Atlas
 
-**Plan the first human Marswalk to an active dune on Mars, then make the go / no-go call.**
+Gale Atlas is a Marswalk planner for Namib Dune in Gale Crater. Compare routes, check suit reserves, and make the go / no-go call.
 
 [![NASA Space Apps Challenge 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-blue.svg)](https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![Marswalk planner hero: Namib Dune over HiRISE imagery of Gale Crater](docs/screenshots/hero.jpg)
+![Gale Atlas home page with Gale Crater marked on the Mars globe](docs/screenshots/hero.jpg)
 
 ## The problem
 

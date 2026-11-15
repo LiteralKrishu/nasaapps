@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
+import { SITE_NAME } from "@/lib/site";
 
-export const alt = "Namib Dune Marswalk planner: plan a safe walk in Gale Crater with NASA mission data";
+export const alt = `${SITE_NAME}, a Marswalk planner for Namib Dune in Gale Crater`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -15,12 +16,12 @@ export default function OpenGraphImage() {
       }}>
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flex: 1 }}>
           <div style={{ display: "flex", fontSize: 22, letterSpacing: 4, color: "#ecbb71", fontFamily: "monospace" }}>
-            MARTIAN MAP · GALE CRATER
+            NAMIB DUNE · GALE CRATER
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontSize: 104, lineHeight: 1, letterSpacing: -3 }}>Namib Dune</div>
+            <div style={{ fontSize: 104, lineHeight: 1, letterSpacing: -3 }}>{SITE_NAME}</div>
             <div style={{ fontSize: 34, marginTop: 24, color: "#ada99a", maxWidth: 640, fontFamily: "sans-serif", lineHeight: 1.35 }}>
-              Plan a safe Marswalk with data from six NASA sources.
+              Plan a Marswalk around Namib Dune with NASA observations.
             </div>
           </div>
           <div style={{ display: "flex", fontSize: 22, color: "#ada99a", fontFamily: "monospace" }}>
