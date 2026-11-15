@@ -20,8 +20,6 @@ import SectionNav from "./SectionNav";
 const placeholder = id => function Loading() {
   return <section id={id} className="lazy-placeholder" aria-busy="true" aria-label="Loading section" />;
 };
-// GSAP choreography loads right after hydration so it stays off the critical path.
-const Motion = dynamic(() => import("./Motion"), { ssr: false });
 const WeatherSection = dynamic(() => import("./WeatherSection"), { ssr: false, loading: placeholder("weather") });
 const StormSection = dynamic(() => import("./StormSection"), { ssr: false, loading: placeholder("solar-storm") });
 const ResourcesSection = dynamic(() => import("./ResourcesSection"), { ssr: false, loading: placeholder("resource-exploration") });
@@ -113,51 +111,59 @@ export default function Marswalk() {
   }, []);
 
   return (
-    <main id="top">
-      <Motion />
+    <div id="top">
+      <a className="skip-link" href="#traverse">Skip to route planning</a>
+      <div className="site-header">
+        <div className="site-header-inner page-width">
+          <a href="#top" className="wordmark"><span className="wordmark-icon" aria-hidden="true" />Marswalk</a>
+          <span className="site-credit">NASA Space Apps Challenge 2026</span>
+        </div>
+      </div>
       <Hero />
       <SectionNav items={NAV} />
-
-      <section className="traverse-panel" id="traverse" aria-labelledby="traverse-title">
-        <div className="detail-heading">
-          <div>
-            <h2 id="traverse-title">Choose a route</h2>
-            <p>Compare the Namib detour with the direct line across HiRISE imagery, slope, contours and the dune exclusion zone.</p>
+      <main className="planner-content page-width">
+        <section className="traverse-panel" id="traverse" tabIndex={-1} aria-labelledby="traverse-title">
+          <div className="detail-heading">
+            <div>
+              <span className="section-step">Step 1 of 3</span>
+              <h2 id="traverse-title">Choose a route</h2>
+              <p>Compare the Namib detour with the direct line across HiRISE imagery, slope, contours and the dune exclusion zone.</p>
+            </div>
           </div>
-        </div>
-        <TraverseSection
-          mapRef={mapRef}
-          mapMode={mapMode}
-          onMapModeChange={setMapMode}
+          <TraverseSection
+            mapRef={mapRef}
+            mapMode={mapMode}
+            onMapModeChange={setMapMode}
+            routeName={routeName}
+            onRouteChange={setRouteName}
+            layers={layers}
+            onLayerChange={setLayer}
+            danAvailable={danAvailable}
+            selectedDanId={selectedDanId}
+            onSelectDan={setSelectedDanId}
+          />
+        </section>
+        <ReturnPlanner routeName={routeName} inputs={plannerInputs} onInputsChange={setPlannerInputs} />
+        <ReadinessPanel
           routeName={routeName}
-          onRouteChange={setRouteName}
-          layers={layers}
-          onLayerChange={setLayer}
-          danAvailable={danAvailable}
-          selectedDanId={selectedDanId}
-          onSelectDan={setSelectedDanId}
+          plannerInputs={plannerInputs}
+          sol={weatherSol}
+          onSolChange={setWeatherSol}
+          storm={storm}
+          onStormChange={setStorm}
+          shareUrl={shareUrl}
         />
-      </section>
-      <ReturnPlanner routeName={routeName} inputs={plannerInputs} onInputsChange={setPlannerInputs} />
-      <ReadinessPanel
-        routeName={routeName}
-        plannerInputs={plannerInputs}
-        sol={weatherSol}
-        onSolChange={setWeatherSol}
-        storm={storm}
-        onStormChange={setStorm}
-        shareUrl={shareUrl}
-      />
-      <GobabebSection onShowSamplingWeather={showSamplingWeather} />
-      <LazySection id="weather">
-        <WeatherSection sol={weatherSol} onSolChange={setWeatherSol} view={weatherView} onViewChange={setWeatherView} />
-      </LazySection>
-      <LazySection id="solar-storm"><StormSection /></LazySection>
-      <WaterSection selectedDanId={selectedDanId} onSelectDan={setSelectedDanId} onShowDanOnMap={showDanOnMap} />
-      <LazySection id="resource-exploration"><ResourcesSection /></LazySection>
-      <LazySection id="marsquakes"><QuakeSection /></LazySection>
+        <GobabebSection onShowSamplingWeather={showSamplingWeather} />
+        <LazySection id="weather">
+          <WeatherSection sol={weatherSol} onSolChange={setWeatherSol} view={weatherView} onViewChange={setWeatherView} />
+        </LazySection>
+        <LazySection id="solar-storm"><StormSection /></LazySection>
+        <WaterSection selectedDanId={selectedDanId} onSelectDan={setSelectedDanId} onShowDanOnMap={showDanOnMap} />
+        <LazySection id="resource-exploration"><ResourcesSection /></LazySection>
+        <LazySection id="marsquakes"><QuakeSection /></LazySection>
+      </main>
 
-      <footer className="site-footer">
+      <footer className="site-footer page-width">
         <div>
           <p className="footer-title">Marswalk planner · NASA Space Apps Challenge 2026</p>
           <p>Terrain and imagery by USGS Astrogeology, NASA, JPL-Caltech, and the University of Arizona. Rover track from NASA PDS PLACES. Weather from Curiosity REMS, radiation from Curiosity RAD and MAVEN SEP, water evidence from Curiosity DAN and SWIM, seismic events from InSight. Surface photos by NASA/JPL-Caltech.</p>
@@ -168,6 +174,6 @@ export default function Marswalk() {
           <a href="#top">Back to top ↑</a>
         </div>
       </footer>
-    </main>
+    </div>
   );
 }

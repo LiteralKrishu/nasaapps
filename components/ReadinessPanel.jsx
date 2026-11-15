@@ -72,6 +72,7 @@ export default function ReadinessPanel({ routeName, plannerInputs, sol, onSolCha
     <section ref={panelRef} className="detail-panel readiness" id="readiness" aria-labelledby="readiness-title" data-status={overall}>
       <div className="detail-heading">
         <div>
+          <span className="section-step">Step 3 of 3</span>
           <h2 id="readiness-title">Go / no-go</h2>
           <p>One call from every layer of the plan. Change the route, suit budget, sol or space weather and the verdict updates.</p>
         </div>

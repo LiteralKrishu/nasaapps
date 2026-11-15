@@ -117,9 +117,9 @@ export default function MarsGlobe() {
     const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 200);
     camera.position.set(0, 0, 4.4);
 
-    const sun = new THREE.DirectionalLight("#fff1e0", 3.6);
-    sun.position.set(-3.2, 1.6, 2.4);
-    scene.add(sun, new THREE.AmbientLight("#5a3a2c", 0.22));
+    const sun = new THREE.DirectionalLight("#fff1e0", 3.3);
+    sun.position.set(-3.2, 2.6, 3.4);
+    scene.add(sun, new THREE.AmbientLight("#a67459", 0.38));
 
     const stars = starField(1400);
     scene.add(stars);
@@ -128,7 +128,11 @@ export default function MarsGlobe() {
     globe.rotation.set(TILT, REST_YAW, 0);
     scene.add(globe);
 
-    const texture = new THREE.TextureLoader().load("/data/marsquake-basemap.webp", () => { invalidate(); });
+    let textureReady = false;
+    const texture = new THREE.TextureLoader().load("/data/marsquake-basemap.webp", () => {
+      textureReady = true;
+      invalidate();
+    });
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     const planet = new THREE.Mesh(
@@ -226,13 +230,14 @@ export default function MarsGlobe() {
 
       renderer.render(scene, camera);
       placeLabel();
+      if (textureReady && !host.dataset.ready) host.dataset.ready = "true";
     }
 
     function loop() {
       frame = requestAnimationFrame(loop);
       if (!visible || document.hidden) return;
       // Reduced motion: render only when something changed.
-      if (reduced && !needsFrame && !drag && velocity === 0) return;
+      if (!needsFrame && !drag && velocity === 0 && reduced) return;
       needsFrame = false;
       render();
     }
@@ -268,8 +273,8 @@ export default function MarsGlobe() {
       if (!drag) return;
       drag = null;
       canvas.classList.remove("is-dragging");
-      velocity = Math.max(-6, Math.min(6, velocity));
-      returnToSite();
+      velocity = reduced ? 0 : Math.max(-6, Math.min(6, velocity));
+      if (!reduced) returnToSite();
     };
     canvas.addEventListener("pointerdown", onPointerDown);
     canvas.addEventListener("pointermove", onPointerMove);
@@ -285,19 +290,15 @@ export default function MarsGlobe() {
     // Intro: the planet spins into view and settles on Gale Crater.
     const ctx = gsap.context(() => {
       if (!reduced) {
-        gsap.fromTo(view, { spin: -Math.PI * 1.15 }, { spin: 0, duration: 3.2, ease: "expo.out", delay: 0.15 });
-        gsap.fromTo(host, { autoAlpha: 0, scale: 0.86 }, { autoAlpha: 1, scale: 1, duration: 1.8, ease: "power2.out" });
-        gsap.from(marker.scale, { x: 0, y: 0, z: 0, duration: 0.9, delay: 2.2, ease: "back.out(2.5)" });
-        gsap.fromTo(label, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, delay: 2.6 });
+        gsap.fromTo(view, { spin: -0.85 }, { spin: 0, duration: 1.7, ease: "power3.out" });
+        gsap.to(view, {
+          zoom: 0.55, lift: 0.6, ease: "none",
+          scrollTrigger: {
+            trigger: host.closest(".hero") ?? host, start: "top top", end: "bottom top", scrub: 0.6,
+            onUpdate: invalidate,
+          },
+        });
       }
-      // Scrolling past the hero dives toward the landing site.
-      gsap.to(view, {
-        zoom: 1, lift: 1, ease: "none",
-        scrollTrigger: {
-          trigger: host.closest(".hero") ?? host, start: "top top", end: "bottom top", scrub: reduced ? true : 0.6,
-          onUpdate: invalidate,
-        },
-      });
     });
 
     loop();
@@ -320,6 +321,7 @@ export default function MarsGlobe() {
       texture.dispose();
       renderer.dispose();
       canvas.remove();
+      delete host.dataset.ready;
       ScrollTrigger.refresh();
     };
   }, [supported]);
@@ -329,7 +331,7 @@ export default function MarsGlobe() {
     <div className="hero-globe" ref={hostRef} aria-hidden="true">
       <div className="globe-label" ref={labelRef}>
         <span className="globe-label-line"></span>
-        <span className="globe-label-text"><strong>Gale Crater</strong>Namib Dune · 4.7° S 137.4° E</span>
+        <span className="globe-label-text">Gale Crater</span>
       </div>
     </div>
   );
