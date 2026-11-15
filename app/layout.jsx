@@ -9,6 +9,8 @@ const DESCRIPTION = "Plan a safe Marswalk around Namib Dune in Gale Crater: rout
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL
   ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
 
+const MOTION_BOOT = `(function(){var d=document.documentElement;if(matchMedia("(prefers-reduced-motion: no-preference)").matches){d.classList.add("js-motion");setTimeout(function(){d.classList.remove("js-motion")},3000)}})()`;
+
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Namib Dune · Marswalk planner",
@@ -28,7 +30,11 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
+    <html lang="en" className={`${sans.variable} ${serif.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Hide intro elements until GSAP takes over; give up after 3 s so content is never lost. */}
+        <script dangerouslySetInnerHTML={{ __html: MOTION_BOOT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

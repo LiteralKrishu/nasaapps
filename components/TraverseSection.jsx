@@ -1,12 +1,19 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import survey from "@/lib/data/survey.json";
 import water from "@/lib/data/water-isru.json";
 import { linePath, useElementSize } from "@/lib/hooks";
 import ProfileChart from "./ProfileChart";
 
 const [WIDTH, HEIGHT] = survey.size;
+
+// three.js loads only when someone opens the 3D view.
+const Terrain3D = dynamic(() => import("./Terrain3D"), {
+  ssr: false,
+  loading: () => <div className="terrain-3d" data-status="loading"><p className="terrain-status">Loading 3D terrain…</p></div>,
+});
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 1.45;
 
@@ -55,8 +62,9 @@ function DanMarker({ point, selected, onSelect }) {
 }
 
 export default function TraverseSection({
-  mapRef, routeName, onRouteChange, layers, onLayerChange, danAvailable, selectedDanId, onSelectDan,
+  mapRef, mapMode, onMapModeChange, routeName, onRouteChange, layers, onLayerChange, danAvailable, selectedDanId, onSelectDan,
 }) {
+  const is3d = mapMode === "3d";
   const [view, setView] = useState({ x: 0, y: 0, zoom: 1 });
   const [profileIndex, setProfileIndex] = useState(0);
   const [readout, setReadout] = useState("Move across the map to inspect coordinates");
@@ -140,13 +148,20 @@ export default function TraverseSection({
       <section className="survey" aria-label="Marswalk map and elevation profile">
         <div className="toolbar">
           <h2>Traverse map</h2>
-          <div className="zoom" aria-label="Map zoom">
+          <div className="view-toggle" role="group" aria-label="Map view">
+            <button type="button" aria-pressed={!is3d} onClick={() => onMapModeChange("2d")}>2D map</button>
+            <button type="button" aria-pressed={is3d} onClick={() => onMapModeChange("3d")}>3D terrain</button>
+          </div>
+          <div className="zoom" aria-label="Map zoom" hidden={is3d}>
             <button type="button" aria-label="Zoom out" disabled={view.zoom <= 1} onClick={() => zoom(1 / ZOOM_STEP)}>−</button>
             <button type="button" aria-label="Zoom in" disabled={view.zoom >= MAX_ZOOM} onClick={() => zoom(ZOOM_STEP)}>+</button>
             <button type="button" aria-label="Reset map view" onClick={() => setView({ x: 0, y: 0, zoom: 1 })}>Reset</button>
           </div>
         </div>
         <div className="map-frame">
+          {is3d ? (
+            <Terrain3D routeName={routeName} profileIndex={index} onInspect={setProfileIndex} layers={layers} />
+          ) : (<>
           <svg
             id="map" ref={mapRef} className={mapClass} role="img" tabIndex={0}
             viewBox={`${view.x} ${view.y} ${w} ${h}`}
@@ -214,6 +229,7 @@ export default function TraverseSection({
             <div id="scale"><span style={{ width: `${scaleWidth}px` }}></span><strong>25 m</strong></div>
           </div>
           <div className="map-readout">{readout}</div>
+          </>)}
         </div>
         <section className="profile" aria-labelledby="profile-title">
           <div className="profile-top">

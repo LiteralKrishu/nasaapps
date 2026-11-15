@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import survey from "@/lib/data/survey.json";
 import readiness from "@/lib/data/readiness.json";
 import { planFromInputs } from "@/lib/planner";
@@ -19,6 +19,7 @@ const VERDICTS = {
 /** Step 03: one go / caution / no-go call built from every other section. */
 export default function ReadinessPanel({ routeName, plannerInputs, sol, onSolChange, storm, onStormChange, shareUrl }) {
   const [copied, setCopied] = useState("");
+  const panelRef = useRef(null);
   const route = survey.routes[routeName];
   const day = SOLS.find(item => item.sol === sol);
   const { checks, overall } = assessMission({
@@ -29,6 +30,33 @@ export default function ReadinessPanel({ routeName, plannerInputs, sol, onSolCha
     seismic: readiness.seismic,
     stormActive: storm,
   });
+
+  const statusKey = `${overall}:${checks.map(check => check.status).join(",")}`;
+  const shownKey = useRef(statusKey);
+  // When the verdict changes, the pill pops and the checks ripple so the change is hard to miss.
+  useEffect(() => {
+    if (shownKey.current === statusKey) return undefined;
+    shownKey.current = statusKey;
+    let media;
+    let cancelled = false;
+    import("@/lib/gsap").then(({ gsap, MOTION_OK }) => {
+      const panel = panelRef.current;
+      if (cancelled || !panel) return;
+      media = gsap.matchMedia();
+      media.add(MOTION_OK, () => {
+        gsap.fromTo(panel.querySelector(".readiness-verdict .status-pill"),
+          { scale: 0.7, rotate: -4 }, { scale: 1, rotate: 0, duration: 0.7, ease: "back.out(3)" });
+        gsap.fromTo(panel.querySelector(".readiness-verdict"),
+          { boxShadow: "0 0 0 0 var(--status)" }, { boxShadow: "0 0 0 14px transparent", duration: 0.9, ease: "power2.out", clearProps: "boxShadow" });
+        gsap.fromTo(panel.querySelectorAll(".readiness-checks li"),
+          { x: -10, autoAlpha: 0.4 }, { x: 0, autoAlpha: 1, duration: 0.5, stagger: 0.05, clearProps: "transform,opacity,visibility" });
+      });
+    });
+    return () => {
+      cancelled = true;
+      media?.revert();
+    };
+  }, [statusKey]);
 
   const copy = async () => {
     try {
@@ -41,7 +69,7 @@ export default function ReadinessPanel({ routeName, plannerInputs, sol, onSolCha
   };
 
   return (
-    <section className="detail-panel readiness" id="readiness" aria-labelledby="readiness-title" data-status={overall}>
+    <section ref={panelRef} className="detail-panel readiness" id="readiness" aria-labelledby="readiness-title" data-status={overall}>
       <div className="detail-heading">
         <div>
           <h2 id="readiness-title">Go / no-go</h2>
